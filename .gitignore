@@ -1,0 +1,65 @@
+# Node & Bun dependencies
+node_modules/
+bun.lockb
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+*.cache
+
+# Logs & Debugging
+logs
+*.log
+logs/*
+debug.log
+error.log
+bun-error.log
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Bun runtime files
+.bun/
+
+# PostgreSQL & Drizzle ORM
+drizzle/
+migrations/
+pgdata/
+*.dump
+*.sql
+
+# Testing & Coverage
+coverage/
+*.test.ts
+*.test.js
+jest.config.js
+vitest.config.ts
+.vitest/
+
+# Next.js (if used)
+.next/
+out/
+
+# Misc
+*.bak
+*.old
