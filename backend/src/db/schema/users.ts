@@ -1,22 +1,22 @@
 import { pgTable, uuid, text, boolean, timestamp } from "drizzle-orm/pg-core";
 
-export const user = pgTable("user", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").notNull().default(false),
+  emailVerified: boolean("email_verified").notNull(),
   image: text("image"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
-  role: text("role").default("user"),
-  banned: boolean("banned").default(false),
+  role: text("role"),
+  banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
   username: text("username").unique(),
 });
 
-export const session = pgTable("session", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const sessions = pgTable("sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
   expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
   createdAt: timestamp("created_at").notNull(),
@@ -25,17 +25,17 @@ export const session = pgTable("session", {
   userAgent: text("user_agent"),
   userId: uuid("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
-  impersonatedBy: text("impersonated_by"),
+    .references(() => users.id),
+  impersonatedBy: uuid("impersonated_by"),
 });
 
-export const account = pgTable("account", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const accounts = pgTable("accounts", {
+  id: uuid("id").primaryKey().defaultRandom(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
   userId: uuid("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    .references(() => users.id),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
@@ -47,8 +47,8 @@ export const account = pgTable("account", {
   updatedAt: timestamp("updated_at").notNull(),
 });
 
-export const verification = pgTable("verification", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const verifications = pgTable("verifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
