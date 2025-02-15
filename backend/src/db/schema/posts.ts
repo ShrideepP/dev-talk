@@ -2,8 +2,8 @@ import {
   pgEnum,
   pgTable,
   uuid,
-  varchar,
   text,
+  varchar,
   integer,
   timestamp,
 } from "drizzle-orm/pg-core";
@@ -25,7 +25,7 @@ export const contentTypeEnum = pgEnum("content_type", [
 
 export const posts = pgTable("posts", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   categoryId: uuid("category_id")
@@ -44,6 +44,26 @@ export const posts = pgTable("posts", {
     .$onUpdate(() => sql`NOW()`),
 });
 
-export const postsInsertSchema = createInsertSchema(posts);
+export const postsInsertSchema = createInsertSchema(posts).refine(
+  (data) => {
+    if (data.contentType === "text" && !data.content) {
+      return false;
+    }
+    if (
+      (data.contentType === "image" || data.contentType === "video") &&
+      !data.mediaUrl
+    ) {
+      return false;
+    }
+    if (data.contentType === "link" && !data.url) {
+      return false;
+    }
+    return true;
+  },
+  {
+    message: "Invalid data for the specified content type",
+    path: ["contentType"], // Associate the error with the contentType field
+  }
+);
 export const postsSelectSchema = createSelectSchema(posts);
 export const postsUpdateSchema = createUpdateSchema(posts);

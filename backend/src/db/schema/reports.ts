@@ -16,7 +16,7 @@ export const reportStatusEnum = pgEnum("status", [
 
 export const reports = pgTable("reports", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   postId: uuid("post_id").references(() => posts.id, { onDelete: "cascade" }),

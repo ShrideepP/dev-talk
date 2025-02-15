@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, uuid, timestamp } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { posts } from "./posts";
 import { comments } from "./comments";
@@ -12,7 +12,7 @@ export const voteTypeEnum = pgEnum("vote_type", ["upvote", "downvote"]);
 
 export const votes = pgTable("votes", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   postId: uuid("post_id").references(() => posts.id, { onDelete: "cascade" }),

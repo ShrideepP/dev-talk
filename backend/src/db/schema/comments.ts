@@ -9,7 +9,7 @@ import {
 
 export const comments = pgTable("comments", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   postId: uuid("post_id")
