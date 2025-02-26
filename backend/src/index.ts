@@ -3,15 +3,17 @@ import { AppVariables } from "./types";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { auth } from "./config/auth";
+import { v2 as cloudinary } from "cloudinary";
+import { categoriesRoutes, postsRoutes, commentsRoutes } from "./routes/v1";
 
 const app = new Hono<{ Variables: AppVariables }>();
 
 app.use(logger());
 
 app.use(
-  "/api/auth/*", // or replace with "*" to enable cors for all routes
+  "/api/*",
   cors({
-    origin: process.env.CLIENT_BASE_URL!, // replace with your origin
+    origin: process.env.CLIENT_BASE_URL!,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
@@ -34,10 +36,24 @@ app.use("*", async (c, next) => {
   return next();
 });
 
+app.use(async (_, next) => {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  await next();
+});
+
 app.on(["POST", "GET"], "/api/auth/*", (c) => {
   return auth.handler(c.req.raw);
 });
 
-app.basePath("/api/v1");
+app
+  .basePath("/api/v1")
+  .route("/categories", categoriesRoutes)
+  .route("/posts", postsRoutes)
+  .route("/comments", commentsRoutes);
 
 export default app;

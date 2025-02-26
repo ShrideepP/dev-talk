@@ -28,6 +28,9 @@ export const posts = pgTable("posts", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name"),
+  image: text("image"),
+  username: text("username"),
   categoryId: uuid("category_id")
     .notNull()
     .references(() => categories.id, { onDelete: "cascade" }),
@@ -46,23 +49,13 @@ export const posts = pgTable("posts", {
 
 export const postsInsertSchema = createInsertSchema(posts).refine(
   (data) => {
-    if (data.contentType === "text" && !data.content) {
-      return false;
-    }
-    if (
-      (data.contentType === "image" || data.contentType === "video") &&
-      !data.mediaUrl
-    ) {
-      return false;
-    }
-    if (data.contentType === "link" && !data.url) {
-      return false;
-    }
+    if (data.contentType === "text" && !data.content) return false;
+    if (data.contentType === "link" && !data.url) return false;
     return true;
   },
   {
     message: "Invalid data for the specified content type",
-    path: ["contentType"], // Associate the error with the contentType field
+    path: ["contentType"],
   }
 );
 export const postsSelectSchema = createSelectSchema(posts);

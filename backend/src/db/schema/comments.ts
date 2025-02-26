@@ -1,4 +1,11 @@
-import { pgTable, uuid, text, integer, timestamp } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  text,
+  integer,
+  timestamp,
+  type AnyPgColumn,
+} from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { posts } from "./posts";
 import {
@@ -15,7 +22,9 @@ export const comments = pgTable("comments", {
   postId: uuid("post_id")
     .notNull()
     .references(() => posts.id, { onDelete: "cascade" }),
-  // parentId: uuid("parent_id").references(() => comments.id, { onDelete: "cascade" }),
+  parentId: uuid("parent_id").references((): AnyPgColumn => comments.id, {
+    onDelete: "cascade",
+  }),
   content: text("content").notNull(),
   upvotes: integer("upvotes").default(0),
   downvotes: integer("downvotes").default(0),
