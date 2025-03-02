@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getCategories, getPosts } from "@/lib/queries";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,8 @@ export const Route = createFileRoute("/_main-layout/")({
   validateSearch: (search: {
     page?: number;
     category?: string;
-  }): { page?: number; category?: string } => {
+    newest?: boolean;
+  }): { page?: number; category?: string; newest?: boolean } => {
     return {
       page: search.page,
       category: search.category,
@@ -23,7 +24,9 @@ export const Route = createFileRoute("/_main-layout/")({
 });
 
 function RouteComponent() {
-  const { page = 1, category } = Route.useSearch();
+  const { page = 1, category, newest } = Route.useSearch();
+
+  const navigate = useNavigate();
 
   const { data: categoriesRes } = useQuery<QueryResponse<Categories>>({
     queryKey: ["categories"],
@@ -31,8 +34,8 @@ function RouteComponent() {
   });
 
   const { data: postsRes, isLoading } = useQuery<QueryResponse<Posts>>({
-    queryKey: ["posts", page, category],
-    queryFn: () => getPosts(page, category),
+    queryKey: ["posts", page, category, newest],
+    queryFn: () => getPosts(page, category, newest),
   });
 
   const pagination = postsRes?.data.pagination;
@@ -41,7 +44,21 @@ function RouteComponent() {
     <section className="col-span-2 flex flex-col gap-6 md:gap-10">
       <div className="flex flex-wrap justify-between gap-2">
         <div className="flex grow gap-2">
-          <Button variant="outline">Newest</Button>
+          <Button
+            variant={newest ? "secondary" : "outline"}
+            onClick={() =>
+              navigate({
+                to: "/",
+                search: (search) => ({
+                  ...search,
+                  newest: newest ? undefined : true,
+                }),
+              })
+            }
+          >
+            Newest
+          </Button>
+
           <Categories categories={categoriesRes?.data.categories} />
         </div>
 
@@ -52,9 +69,13 @@ function RouteComponent() {
         </Link>
       </div>
 
-      {isLoading
-        ? Array.from({ length: 10 }).map((_, idx) => <PostSkeleton key={idx} />)
-        : null}
+      {isLoading ? (
+        <div className="flex flex-col gap-6">
+          {Array.from({ length: 10 }).map((_, idx) => (
+            <PostSkeleton key={idx} />
+          ))}
+        </div>
+      ) : null}
 
       {postsRes?.data.posts && postsRes.data.posts.length ? (
         <div className="flex flex-col gap-6">

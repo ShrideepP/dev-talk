@@ -25,7 +25,7 @@ export const Pagination = ({ pagination }: { pagination: Pagination }) => {
   const visiblePages = pageNumbers.slice(startIdx, endIdx);
 
   return (
-    <PageNavigation className="justify-start">
+    <PageNavigation>
       <PaginationContent>
         <PaginationItem>
           <Link

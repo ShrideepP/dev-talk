@@ -8,13 +8,14 @@ import {
   Plus,
   Terminal,
   Ellipsis,
-  TriangleAlert,
+  Flag,
   Sun,
   Moon,
-  ArrowUp,
-  ArrowDown,
+  ChevronUp,
+  ChevronDown,
   MessageCircle,
   ChevronLeft,
+  Reply,
 } from "lucide-react";
 
 const GitHub = (lucideProps: LucideProps) => {
@@ -60,11 +61,12 @@ export const Icons = {
   plus: Plus,
   terminal: Terminal,
   ellipsis: Ellipsis,
-  triangleAlert: TriangleAlert,
+  flag: Flag,
   sun: Sun,
   moon: Moon,
-  arrowUp: ArrowUp,
-  arrowDown: ArrowDown,
+  chevronUp: ChevronUp,
+  chevronDown: ChevronDown,
   messageCircle: MessageCircle,
   chevronLeft: ChevronLeft,
+  reply: Reply,
 };

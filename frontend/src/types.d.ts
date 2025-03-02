@@ -50,9 +50,28 @@ interface Posts {
   posts: Post[];
 }
 
-interface PostCreationResponse {
+interface CreationResponse<DataType> {
   status: "success" | "error";
   message: string;
-  data: Post;
+  data: DataType;
   error: unknown[];
+}
+
+interface Comments {
+  pagination: Pagination;
+  comments: Comment[];
+}
+
+interface Comment {
+  id: string;
+  userId: string;
+  name: string;
+  image?: string;
+  username?: string;
+  postId: string;
+  parentId: string | null;
+  content: string;
+  upvotes: number;
+  downvotes: number;
+  createdAt: string;
 }

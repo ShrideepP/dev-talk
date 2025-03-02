@@ -125,3 +125,11 @@ export const createPostSchema = z
       });
     }
   });
+
+export const createCommentSchema = z.object({
+  content: z
+    .string()
+    .min(1, { message: "Comment cannot be empty" })
+    .max(1000, { message: "Comment must be less than 1000 characters" })
+    .trim(),
+});

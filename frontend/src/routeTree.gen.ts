@@ -17,6 +17,7 @@ import { Route as MainLayoutImport } from './routes/_main-layout'
 import { Route as MainLayoutIndexImport } from './routes/_main-layout/index'
 import { Route as MainLayoutCreatePostImport } from './routes/_main-layout/create-post'
 import { Route as authAuthLayoutImport } from './routes/(auth)/_auth-layout'
+import { Route as MainLayoutPostsPostIdImport } from './routes/_main-layout/posts/$postId'
 import { Route as authAuthLayoutVerifyEmailImport } from './routes/(auth)/_auth-layout/verify-email'
 import { Route as authAuthLayoutResetPasswordImport } from './routes/(auth)/_auth-layout/reset-password'
 import { Route as authAuthLayoutRegisterImport } from './routes/(auth)/_auth-layout/register'
@@ -54,6 +55,12 @@ const MainLayoutCreatePostRoute = MainLayoutCreatePostImport.update({
 const authAuthLayoutRoute = authAuthLayoutImport.update({
   id: '/_auth-layout',
   getParentRoute: () => authRoute,
+} as any)
+
+const MainLayoutPostsPostIdRoute = MainLayoutPostsPostIdImport.update({
+  id: '/posts/$postId',
+  path: '/posts/$postId',
+  getParentRoute: () => MainLayoutRoute,
 } as any)
 
 const authAuthLayoutVerifyEmailRoute = authAuthLayoutVerifyEmailImport.update({
@@ -162,6 +169,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authAuthLayoutVerifyEmailImport
       parentRoute: typeof authAuthLayoutImport
     }
+    '/_main-layout/posts/$postId': {
+      id: '/_main-layout/posts/$postId'
+      path: '/posts/$postId'
+      fullPath: '/posts/$postId'
+      preLoaderRoute: typeof MainLayoutPostsPostIdImport
+      parentRoute: typeof MainLayoutImport
+    }
   }
 }
 
@@ -170,11 +184,13 @@ declare module '@tanstack/react-router' {
 interface MainLayoutRouteChildren {
   MainLayoutCreatePostRoute: typeof MainLayoutCreatePostRoute
   MainLayoutIndexRoute: typeof MainLayoutIndexRoute
+  MainLayoutPostsPostIdRoute: typeof MainLayoutPostsPostIdRoute
 }
 
 const MainLayoutRouteChildren: MainLayoutRouteChildren = {
   MainLayoutCreatePostRoute: MainLayoutCreatePostRoute,
   MainLayoutIndexRoute: MainLayoutIndexRoute,
+  MainLayoutPostsPostIdRoute: MainLayoutPostsPostIdRoute,
 }
 
 const MainLayoutRouteWithChildren = MainLayoutRoute._addFileChildren(
@@ -220,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof authAuthLayoutRegisterRoute
   '/reset-password': typeof authAuthLayoutResetPasswordRoute
   '/verify-email': typeof authAuthLayoutVerifyEmailRoute
+  '/posts/$postId': typeof MainLayoutPostsPostIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -230,6 +247,7 @@ export interface FileRoutesByTo {
   '/register': typeof authAuthLayoutRegisterRoute
   '/reset-password': typeof authAuthLayoutResetPasswordRoute
   '/verify-email': typeof authAuthLayoutVerifyEmailRoute
+  '/posts/$postId': typeof MainLayoutPostsPostIdRoute
 }
 
 export interface FileRoutesById {
@@ -244,6 +262,7 @@ export interface FileRoutesById {
   '/(auth)/_auth-layout/register': typeof authAuthLayoutRegisterRoute
   '/(auth)/_auth-layout/reset-password': typeof authAuthLayoutResetPasswordRoute
   '/(auth)/_auth-layout/verify-email': typeof authAuthLayoutVerifyEmailRoute
+  '/_main-layout/posts/$postId': typeof MainLayoutPostsPostIdRoute
 }
 
 export interface FileRouteTypes {
@@ -257,6 +276,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/posts/$postId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -266,6 +286,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/posts/$postId'
   id:
     | '__root__'
     | '/_main-layout'
@@ -278,6 +299,7 @@ export interface FileRouteTypes {
     | '/(auth)/_auth-layout/register'
     | '/(auth)/_auth-layout/reset-password'
     | '/(auth)/_auth-layout/verify-email'
+    | '/_main-layout/posts/$postId'
   fileRoutesById: FileRoutesById
 }
 
@@ -309,7 +331,8 @@ export const routeTree = rootRoute
       "filePath": "_main-layout.tsx",
       "children": [
         "/_main-layout/create-post",
-        "/_main-layout/"
+        "/_main-layout/",
+        "/_main-layout/posts/$postId"
       ]
     },
     "/(auth)": {
@@ -356,6 +379,10 @@ export const routeTree = rootRoute
     "/(auth)/_auth-layout/verify-email": {
       "filePath": "(auth)/_auth-layout/verify-email.tsx",
       "parent": "/(auth)/_auth-layout"
+    },
+    "/_main-layout/posts/$postId": {
+      "filePath": "_main-layout/posts/$postId.tsx",
+      "parent": "/_main-layout"
     }
   }
 }

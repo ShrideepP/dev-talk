@@ -1,5 +1,5 @@
+import { useSearch, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
@@ -18,10 +18,14 @@ export const Categories = ({
 }: {
   categories: Category[] | undefined;
 }) => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const search = useSearch({ from: "/_main-layout/" });
+
+  const { category } = search;
 
   const navigate = useNavigate();
+
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(category ?? "");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

@@ -7,11 +7,16 @@ export const getCategories = async () => {
   return res.data;
 };
 
-export const getPosts = async (page: number, category?: string) => {
+export const getPosts = async (
+  page: number,
+  category?: string,
+  newest?: boolean,
+) => {
   const params = new URLSearchParams();
-  params.set("page", page.toString());
-  params.set("limit", "10");
-  if (category) params.set("category", category);
+  params.append("page", page.toString());
+  params.append("limit", "10");
+  if (category) params.append("category", category);
+  if (newest) params.append("newest", String(newest));
 
   const res = await axios.get(
     `${BASE_API_URL}/api/v1/posts?${params.toString()}`,
@@ -19,10 +24,38 @@ export const getPosts = async (page: number, category?: string) => {
   return res.data;
 };
 
+export const getPost = async (postId: string) => {
+  const res = await axios.get(`${BASE_API_URL}/api/v1/posts/${postId}`);
+  return res.data;
+};
+
 export const createPost = async (
   body: FormData,
-): Promise<AxiosResponse<PostCreationResponse>> => {
+): Promise<AxiosResponse<CreationResponse<Post>>> => {
   const res = await axios.post(`${BASE_API_URL}/api/v1/posts`, body, {
+    withCredentials: true,
+  });
+  return res;
+};
+
+export const createComment = async (body: {
+  [key: string]: string;
+}): Promise<AxiosResponse<CreationResponse<Comment>>> => {
+  const res = await axios.post(`${BASE_API_URL}/api/v1/comments`, body, {
+    withCredentials: true,
+  });
+  return res;
+};
+
+export const getComments = async (postId: string) => {
+  const res = await axios.get(`${BASE_API_URL}/api/v1/comments/${postId}`);
+  return res.data;
+};
+
+export const vote = async <DataType>(body: {
+  [key: string]: string;
+}): Promise<AxiosResponse<CreationResponse<DataType>>> => {
+  const res = await axios.post(`${BASE_API_URL}/api/v1/votes`, body, {
     withCredentials: true,
   });
   return res;

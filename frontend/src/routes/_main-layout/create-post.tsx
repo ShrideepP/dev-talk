@@ -1,14 +1,13 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { createPostSchema } from "@/lib/schema";
-import { AxiosResponse, AxiosError } from "axios";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { getCategories, createPost } from "@/lib/queries";
 import { authClient } from "@/lib/auth-client";
+import { useRedirectToLogin } from "@/hooks/use-redirect-to-login";
+import { useQuery } from "@tanstack/react-query";
+import { getCategories } from "@/lib/queries";
+import { useCreatePost } from "@/hooks/use-create-post";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "@/hooks/use-toast";
-import { capitalizeString } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -63,6 +62,12 @@ const defaultValues: z.infer<typeof createPostSchema> = {
 function RouteComponent() {
   const { contentType = defaultValues.contentType } = Route.useSearch();
 
+  const navigate = useNavigate();
+
+  const { data } = authClient.useSession();
+
+  const redirectToLogin = useRedirectToLogin();
+
   const { data: categoriesRes } = useQuery<QueryResponse<Categories>>({
     queryKey: ["categories"],
     queryFn: getCategories,
@@ -70,17 +75,7 @@ function RouteComponent() {
 
   const categories = categoriesRes?.data.categories;
 
-  const { mutate, isPending } = useMutation<
-    AxiosResponse<PostCreationResponse>,
-    AxiosError<PostCreationResponse>,
-    FormData
-  >({
-    mutationFn: createPost,
-  });
-
-  const navigate = useNavigate();
-
-  const { data } = authClient.useSession();
+  const { mutate, isPending } = useCreatePost();
 
   const form = useForm<z.infer<typeof createPostSchema>>({
     resolver: zodResolver(createPostSchema),
@@ -104,13 +99,8 @@ function RouteComponent() {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof createPostSchema>) => {
-    if (!data?.session) {
-      navigate({
-        to: "/login",
-        search: { redirect: window.location.pathname },
-      });
-    }
+  const onSubmit = (values: z.infer<typeof createPostSchema>) => {
+    if (!data?.session) return redirectToLogin();
 
     const { categoryId, title, content, contentType, url, file } = values;
 
@@ -124,25 +114,7 @@ function RouteComponent() {
     if (url) formData.append("url", url);
     if (file) formData.append("file", file);
 
-    mutate(formData, {
-      onSuccess: ({ data }) => {
-        toast({
-          title: capitalizeString(data.status),
-          description: data.message,
-        });
-
-        navigate({ to: "/" });
-      },
-      onError: ({ response }) => {
-        toast({
-          title: capitalizeString(response?.data.status) ?? "Oops!",
-          description:
-            response?.data.message ??
-            "An error occurred. Please try again later.",
-          variant: "destructive",
-        });
-      },
-    });
+    mutate(formData);
   };
 
   return (
