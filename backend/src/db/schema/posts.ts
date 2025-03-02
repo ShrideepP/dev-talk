@@ -9,7 +9,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { categories } from "./categories";
-import { sql } from "drizzle-orm";
 import {
   createInsertSchema,
   createSelectSchema,
@@ -44,7 +43,7 @@ export const posts = pgTable("posts", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
-    .$onUpdate(() => sql`NOW()`),
+    .$onUpdate(() => new Date()),
 });
 
 export const postsInsertSchema = createInsertSchema(posts).refine(

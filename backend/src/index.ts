@@ -4,7 +4,12 @@ import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { auth } from "./config/auth";
 import { v2 as cloudinary } from "cloudinary";
-import { categoriesRoutes, postsRoutes, commentsRoutes } from "./routes/v1";
+import {
+  categoriesRoutes,
+  postsRoutes,
+  commentsRoutes,
+  votesRoutes,
+} from "./routes/v1";
 
 const app = new Hono<{ Variables: AppVariables }>();
 
@@ -54,6 +59,7 @@ app
   .basePath("/api/v1")
   .route("/categories", categoriesRoutes)
   .route("/posts", postsRoutes)
-  .route("/comments", commentsRoutes);
+  .route("/comments", commentsRoutes)
+  .route("/votes", votesRoutes);
 
 export default app;

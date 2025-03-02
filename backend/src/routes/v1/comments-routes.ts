@@ -40,6 +40,9 @@ router.post("/", zValidator("json", commentsInsertSchema), async (c) => {
 
     const validatedComment = c.req.valid("json");
     validatedComment.userId = user.id;
+    validatedComment.name = user.name;
+    validatedComment.image = user.image;
+    validatedComment.username = user.username;
 
     const { postId } = validatedComment;
 
@@ -120,7 +123,10 @@ router.get("/:postId", async (c) => {
 
     const [{ count: totalComments }] = await db
       .select({ count: count() })
-      .from(commentsTable);
+      .from(commentsTable)
+      .where(
+        and(eq(commentsTable.postId, postId), isNull(commentsTable.parentId))
+      );
 
     const totalPages = Math.ceil(totalComments / parseInt(limit));
 

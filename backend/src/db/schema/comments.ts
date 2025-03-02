@@ -19,6 +19,9 @@ export const comments = pgTable("comments", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name"),
+  image: text("image"),
+  username: text("username"),
   postId: uuid("post_id")
     .notNull()
     .references(() => posts.id, { onDelete: "cascade" }),

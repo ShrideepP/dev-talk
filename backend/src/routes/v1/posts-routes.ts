@@ -7,7 +7,7 @@ import {
   posts as postsTable,
 } from "../../db/schema";
 import { db } from "../../config/database";
-import { eq, count } from "drizzle-orm";
+import { eq, count, desc } from "drizzle-orm";
 import { uploader } from "../../config/cloudinary";
 
 const router = new Hono<{ Variables: AppVariables }>();
@@ -102,7 +102,12 @@ router.post("/", zValidator("form", postsInsertSchema), async (c) => {
 
 router.get("/", async (c) => {
   try {
-    const { page = "1", limit = "10", category = undefined } = c.req.query();
+    const {
+      page = "1",
+      limit = "10",
+      category = undefined,
+      newest = undefined,
+    } = c.req.query();
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     let categoryId;
@@ -132,7 +137,8 @@ router.get("/", async (c) => {
       .from(postsTable)
       .offset(offset)
       .limit(parseInt(limit))
-      .where(categoryId ? eq(postsTable.categoryId, categoryId) : undefined);
+      .where(categoryId ? eq(postsTable.categoryId, categoryId) : undefined)
+      .orderBy(...(newest ? [desc(postsTable.createdAt)] : []));
 
     const [{ count: totalPosts }] = await db
       .select({ count: count() })
