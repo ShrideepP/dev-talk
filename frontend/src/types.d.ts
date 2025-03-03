@@ -57,11 +57,6 @@ interface CreationResponse<DataType> {
   error: unknown[];
 }
 
-interface Comments {
-  pagination: Pagination;
-  comments: Comment[];
-}
-
 interface Comment {
   id: string;
   userId: string;
@@ -74,4 +69,16 @@ interface Comment {
   upvotes: number;
   downvotes: number;
   createdAt: string;
+}
+
+interface Comments {
+  pagination: Pagination;
+  comments: Comment[];
+}
+
+interface Reply extends Comment {}
+
+interface Replies {
+  pagination: Pagination;
+  replies: Reply[];
 }

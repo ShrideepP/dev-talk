@@ -45,3 +45,45 @@ export const useCreateComment = () => {
     },
   });
 };
+
+export const useReplyComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    AxiosResponse<CreationResponse<Comment>>,
+    AxiosError<CreationResponse<Comment>>,
+    { [key: string]: string }
+  >({
+    mutationFn: createComment,
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ["replies", data.data.parentId],
+        (prevQueryData: QueryResponse<Replies>) => {
+          if (!prevQueryData) return prevQueryData;
+
+          return {
+            ...prevQueryData,
+            data: {
+              ...prevQueryData.data,
+              replies: [...prevQueryData.data.replies, { ...data.data }],
+            },
+          };
+        },
+      );
+
+      toast({
+        title: capitalizeString(data.status),
+        description: data.message,
+      });
+    },
+    onError: ({ response }) => {
+      toast({
+        title: capitalizeString(response?.data.status) ?? "Oops!",
+        description:
+          response?.data.message ??
+          "An error occurred. Please try again later.",
+        variant: "destructive",
+      });
+    },
+  });
+};

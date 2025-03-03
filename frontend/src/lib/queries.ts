@@ -52,6 +52,13 @@ export const getComments = async (postId: string) => {
   return res.data;
 };
 
+export const getReplies = async (commentId: string) => {
+  const res = await axios.get(
+    `${BASE_API_URL}/api/v1/comments/${commentId}/replies`,
+  );
+  return res.data;
+};
+
 export const vote = async <DataType>(body: {
   [key: string]: string;
 }): Promise<AxiosResponse<CreationResponse<DataType>>> => {

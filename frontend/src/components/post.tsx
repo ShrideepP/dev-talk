@@ -64,20 +64,22 @@ export const Post = ({
             </strong>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <Icons.ellipsis className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
+          {data?.user.id === post.userId ? null : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="ghost">
+                  <Icons.ellipsis className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent>
-              <Button variant="ghost" className="w-full">
-                <Icons.flag className="size-4" />
-                Report Post
-              </Button>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <DropdownMenuContent>
+                <Button variant="ghost" className="w-full">
+                  <Icons.flag className="size-4" />
+                  Report Post
+                </Button>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         <CardTitle>{post.title}</CardTitle>

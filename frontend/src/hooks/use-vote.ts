@@ -129,3 +129,53 @@ export const useVoteOnComment = () => {
     },
   });
 };
+
+export const useVoteOnReply = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    AxiosResponse<CreationResponse<Reply>>,
+    AxiosError<CreationResponse<Reply>>,
+    { [key: string]: string }
+  >({
+    mutationFn: vote,
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ["replies", data.data.parentId],
+        (prevQueryData: QueryResponse<Replies>) => {
+          if (!prevQueryData) return prevQueryData;
+
+          return {
+            ...prevQueryData,
+            data: {
+              ...prevQueryData.data,
+              replies: prevQueryData.data.replies.map((reply) =>
+                reply.id === data.data.id
+                  ? {
+                      ...reply,
+                      upvotes: data.data.upvotes,
+                      downvotes: data.data.downvotes,
+                    }
+                  : reply,
+              ),
+            },
+          };
+        },
+      );
+
+      toast({
+        title: capitalizeString(data.status),
+        description: data.message,
+      });
+    },
+    onError: ({ response }) => {
+      toast({
+        title: capitalizeString(response?.data.status) ?? "Oops!",
+        description:
+          response?.data.message ??
+          "An error occurred. Please try again later.",
+        variant: "destructive",
+      });
+    },
+  });
+};

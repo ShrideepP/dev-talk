@@ -1,6 +1,14 @@
+import { z } from "zod";
+import { createReplySchema } from "@/lib/schema";
 import { authClient } from "@/lib/auth-client";
 import { useRedirectToLogin } from "@/hooks/use-redirect-to-login";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getReplies } from "@/lib/queries";
 import { useVoteOnComment } from "@/hooks/use-vote";
+import { useReplyComment } from "@/hooks/use-comment";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardHeader, CardTitle, CardFooter } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -10,11 +18,31 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "./ui/textarea";
+import { Reply } from "./reply";
+
+const defaultValues: z.infer<typeof createReplySchema> = {
+  content: "",
+};
 
 export const Comment = ({ comment }: { comment: Comment }) => {
   const { data } = authClient.useSession();
 
   const redirectToLogin = useRedirectToLogin();
+
+  const [isReplying, setIsReplying] = useState(false);
+
+  const { data: repliesRes } = useQuery<QueryResponse<Replies>>({
+    queryKey: ["replies", comment.id],
+    queryFn: () => getReplies(comment.id),
+  });
 
   const { mutate, isPending, variables } = useVoteOnComment();
 
@@ -22,10 +50,34 @@ export const Comment = ({ comment }: { comment: Comment }) => {
 
   const isDownvotePending = isPending && variables?.voteType === "downvote";
 
+  const replyCommentMutation = useReplyComment();
+
   const onVote = (voteType: "upvote" | "downvote") => {
     if (!data?.session) return redirectToLogin();
 
     mutate({ userId: data.user.id, commentId: comment.id, voteType });
+  };
+
+  const form = useForm<z.infer<typeof createReplySchema>>({
+    resolver: zodResolver(createReplySchema),
+    defaultValues,
+  });
+
+  const onSubmit = (values: z.infer<typeof createReplySchema>) => {
+    if (!data?.session) return redirectToLogin();
+
+    const body: { [key: string]: string } = { ...values };
+
+    if (data?.user.id) body.userId = data?.user.id;
+    body.postId = comment.postId;
+    body.parentId = comment.id;
+
+    replyCommentMutation.mutate(body, {
+      onSettled: () => {
+        form.reset();
+        setIsReplying(false);
+      },
+    });
   };
 
   return (
@@ -49,26 +101,28 @@ export const Comment = ({ comment }: { comment: Comment }) => {
             </strong>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <Icons.ellipsis className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
+          {data?.user.id === comment.userId ? null : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="ghost">
+                  <Icons.ellipsis className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent>
-              <Button variant="ghost" className="w-full">
-                <Icons.flag className="size-4" />
-                Report Comment
-              </Button>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <DropdownMenuContent>
+                <Button variant="ghost" className="w-full">
+                  <Icons.flag className="size-4" />
+                  Report Comment
+                </Button>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         <CardTitle>{comment.content}</CardTitle>
       </CardHeader>
 
-      <CardFooter>
+      <CardFooter className="flex flex-col gap-6">
         <div className="flex w-full justify-between">
           <div className="flex">
             <Button
@@ -104,11 +158,66 @@ export const Comment = ({ comment }: { comment: Comment }) => {
             </Button>
           </div>
 
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => setIsReplying(true)}>
             Reply
             <Icons.reply className="size-4" />
           </Button>
         </div>
+
+        {isReplying ? (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex w-full flex-col gap-6"
+            >
+              <FormField
+                name="content"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        className="resize-none"
+                        placeholder="Write a reply..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  className="w-fit"
+                  variant="outline"
+                  onClick={() => setIsReplying(false)}
+                >
+                  Cancel
+                </Button>
+
+                <Button
+                  type="submit"
+                  className="w-fit"
+                  disabled={replyCommentMutation.isPending}
+                >
+                  {replyCommentMutation.isPending ? (
+                    <Icons.loader className="size-4 animate-spin" />
+                  ) : null}
+                  {replyCommentMutation.isPending ? "Loading..." : "Reply"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        ) : null}
+
+        {repliesRes?.data.replies && repliesRes.data.replies.length ? (
+          <div className="flex w-full flex-col gap-6">
+            {repliesRes.data.replies.map((reply) => (
+              <Reply key={reply.id} reply={reply} />
+            ))}
+          </div>
+        ) : null}
       </CardFooter>
     </Card>
   );

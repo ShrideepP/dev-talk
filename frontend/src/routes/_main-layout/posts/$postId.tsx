@@ -5,7 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRedirectToLogin } from "@/hooks/use-redirect-to-login";
 import { useQuery } from "@tanstack/react-query";
 import { getPost, getComments } from "@/lib/queries";
-import { useCreateComment } from "@/hooks/use-create-comment";
+import { useCreateComment } from "@/hooks/use-comment";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";

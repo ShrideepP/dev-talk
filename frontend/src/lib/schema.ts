@@ -133,3 +133,11 @@ export const createCommentSchema = z.object({
     .max(1000, { message: "Comment must be less than 1000 characters" })
     .trim(),
 });
+
+export const createReplySchema = z.object({
+  content: z
+    .string()
+    .min(1, { message: "Reply cannot be empty." })
+    .max(1000, { message: "Reply must be less than 1000 characters" })
+    .trim(),
+});
