@@ -1,10 +1,6 @@
-import { handle } from "hono/vercel";
+import { handle } from "@hono/node-server/vercel";
 
 // @ts-expect-error
 import app from "../dist/src/index.js";
 
-export const runtime = "edge";
-
-export const POST = handle(app);
-export const GET = handle(app);
-export const OPTIONS = handle(app);
+export default handle(app);
