@@ -1,4 +1,4 @@
-import { pgTable, text, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
@@ -13,6 +13,7 @@ export const users = pgTable("users", {
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
   username: text("username").unique(),
+  displayUsername: text("display_username"),
 });
 
 export const sessions = pgTable("sessions", {
@@ -25,7 +26,7 @@ export const sessions = pgTable("sessions", {
   userAgent: text("user_agent"),
   userId: text("user_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
   impersonatedBy: text("impersonated_by"),
 });
 
@@ -35,7 +36,7 @@ export const accounts = pgTable("accounts", {
   providerId: text("provider_id").notNull(),
   userId: text("user_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
