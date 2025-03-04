@@ -10,7 +10,6 @@ import {
   commentsRoutes,
   votesRoutes,
 } from "./routes/v1";
-import { handle } from "@hono/node-server/vercel";
 
 const app = new Hono<{ Variables: AppVariables }>();
 
@@ -63,4 +62,4 @@ app
   .route("/comments", commentsRoutes)
   .route("/votes", votesRoutes);
 
-export default handle(app);
+export default app;
