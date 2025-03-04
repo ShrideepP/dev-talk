@@ -22,6 +22,14 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
   },
+  advanced: {
+    cookiePrefix: "dev-talk",
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+      partitioned: true,
+    },
+  },
   trustedOrigins: [process.env.CLIENT_BASE_URL!],
   rateLimit: {
     enabled: true,
