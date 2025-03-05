@@ -7,7 +7,7 @@ import {
   comments as commentsTable,
 } from "../../db/schema";
 import { db } from "../../config/database";
-import { eq, and, isNull, count } from "drizzle-orm";
+import { eq, sql, and, isNull, count } from "drizzle-orm";
 
 const router = new Hono<{ Variables: AppVariables }>();
 
@@ -44,7 +44,7 @@ router.post("/", zValidator("json", commentsInsertSchema), async (c) => {
     validatedComment.image = user.image;
     validatedComment.username = user.username;
 
-    const { postId } = validatedComment;
+    const { postId, parentId } = validatedComment;
 
     const posts = await db
       .select()
@@ -62,10 +62,37 @@ router.post("/", zValidator("json", commentsInsertSchema), async (c) => {
         404
       );
 
+    if (parentId) {
+      const parentComments = await db
+        .select()
+        .from(commentsTable)
+        .where(eq(commentsTable.id, parentId));
+
+      if (!parentComments.length)
+        return c.json(
+          {
+            status: "error",
+            message: "Parent comment does not exist",
+            data: null,
+            errors: [],
+          },
+          404
+        );
+    }
+
     const comments = await db
       .insert(commentsTable)
       .values(validatedComment)
       .returning();
+
+    if (parentId) {
+      await db
+        .update(commentsTable)
+        .set({
+          replyCount: sql`${commentsTable.replyCount} + 1`,
+        })
+        .where(eq(commentsTable.id, parentId));
+    }
 
     return c.json(
       {

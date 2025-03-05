@@ -28,6 +28,7 @@ export const comments = pgTable("comments", {
   parentId: uuid("parent_id").references((): AnyPgColumn => comments.id, {
     onDelete: "cascade",
   }),
+  replyCount: integer("reply_count").default(0).notNull(),
   content: text("content").notNull(),
   upvotes: integer("upvotes").default(0),
   downvotes: integer("downvotes").default(0),

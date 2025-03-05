@@ -65,6 +65,7 @@ interface Comment {
   username?: string;
   postId: string;
   parentId: string | null;
+  replyCount: number;
   content: string;
   upvotes: number;
   downvotes: number;

@@ -3,7 +3,7 @@ import { createReplySchema } from "@/lib/schema";
 import { authClient } from "@/lib/auth-client";
 import { useRedirectToLogin } from "@/hooks/use-redirect-to-login";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getReplies } from "@/lib/queries";
 import { useVoteOnComment } from "@/hooks/use-vote";
 import { useReplyComment } from "@/hooks/use-comment";
@@ -39,10 +39,20 @@ export const Comment = ({ comment }: { comment: Comment }) => {
 
   const [isReplying, setIsReplying] = useState(false);
 
-  const { data: repliesRes } = useQuery<QueryResponse<Replies>>({
+  const [shouldFetchReplies, setShouldFetchReplies] = useState(false);
+
+  const {
+    data: repliesRes,
+    isLoading,
+    refetch,
+  } = useQuery<QueryResponse<Replies>>({
     queryKey: ["replies", comment.id],
     queryFn: () => getReplies(comment.id),
+    enabled: false,
+    retry: 1,
   });
+
+  const queryClient = useQueryClient();
 
   const { mutate, isPending, variables } = useVoteOnComment();
 
@@ -51,6 +61,19 @@ export const Comment = ({ comment }: { comment: Comment }) => {
   const isDownvotePending = isPending && variables?.voteType === "downvote";
 
   const replyCommentMutation = useReplyComment();
+
+  const onToggleReplies = () => {
+    if (shouldFetchReplies) {
+      queryClient.removeQueries({
+        queryKey: ["replies", comment.id],
+      });
+
+      setShouldFetchReplies(false);
+    } else {
+      refetch();
+      setShouldFetchReplies(true);
+    }
+  };
 
   const onVote = (voteType: "upvote" | "downvote") => {
     if (!data?.session) return redirectToLogin();
@@ -124,38 +147,59 @@ export const Comment = ({ comment }: { comment: Comment }) => {
 
       <CardFooter className="flex flex-col gap-6">
         <div className="flex w-full justify-between">
-          <div className="flex">
-            <Button
-              size="icon"
-              variant="outline"
-              disabled={isUpvotePending}
-              onClick={() => onVote("upvote")}
-            >
-              {isUpvotePending ? (
-                <Icons.loader className="size-4 animate-spin" />
-              ) : (
-                <Icons.chevronUp className="size-4" />
-              )}
-            </Button>
+          <div className="flex gap-2">
+            <div className="flex">
+              <Button
+                size="icon"
+                variant="outline"
+                disabled={isUpvotePending}
+                onClick={() => onVote("upvote")}
+              >
+                {isUpvotePending ? (
+                  <Icons.loader className="size-4 animate-spin" />
+                ) : (
+                  <Icons.chevronUp className="size-4" />
+                )}
+              </Button>
 
-            <div className="grid size-9 place-items-center">
-              <span className="text-foreground text-sm font-normal">
-                {comment.upvotes - comment.downvotes}
-              </span>
+              <div className="grid size-9 place-items-center">
+                <span className="text-foreground text-sm font-normal">
+                  {comment.upvotes - comment.downvotes}
+                </span>
+              </div>
+
+              <Button
+                size="icon"
+                variant="outline"
+                disabled={isDownvotePending}
+                onClick={() => onVote("downvote")}
+              >
+                {isDownvotePending ? (
+                  <Icons.loader className="size-4 animate-spin" />
+                ) : (
+                  <Icons.chevronDown className="size-4" />
+                )}
+              </Button>
             </div>
 
-            <Button
-              size="icon"
-              variant="outline"
-              disabled={isDownvotePending}
-              onClick={() => onVote("downvote")}
-            >
-              {isDownvotePending ? (
-                <Icons.loader className="size-4 animate-spin" />
-              ) : (
-                <Icons.chevronDown className="size-4" />
-              )}
-            </Button>
+            {comment.replyCount ? (
+              <Button variant="ghost" onClick={onToggleReplies}>
+                {isLoading ? (
+                  <Icons.loader className="size-4 animate-spin" />
+                ) : null}
+
+                {isLoading ? (
+                  "Processing..."
+                ) : (
+                  <>
+                    View Replies
+                    <Icons.chevronDown
+                      className={`size-4 ${shouldFetchReplies ? "rotate-180" : "rotate-0"}`}
+                    />
+                  </>
+                )}
+              </Button>
+            ) : null}
           </div>
 
           <Button variant="outline" onClick={() => setIsReplying(true)}>
