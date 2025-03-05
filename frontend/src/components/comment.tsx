@@ -204,7 +204,7 @@ export const Comment = ({ comment }: { comment: Comment }) => {
                   {replyCommentMutation.isPending ? (
                     <Icons.loader className="size-4 animate-spin" />
                   ) : null}
-                  {replyCommentMutation.isPending ? "Loading..." : "Reply"}
+                  {replyCommentMutation.isPending ? "Processing..." : "Reply"}
                 </Button>
               </div>
             </form>

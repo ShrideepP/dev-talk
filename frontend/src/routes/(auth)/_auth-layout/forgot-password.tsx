@@ -62,6 +62,8 @@ function RouteComponent() {
               description:
                 "A password reset link has been sent to your email address. Please check your inbox.",
             });
+
+            form.reset();
           },
           onError: (ctx) => {
             toast({
@@ -76,7 +78,6 @@ function RouteComponent() {
       );
     } finally {
       setIsLoading(false);
-      form.reset();
     }
   };
 
@@ -122,7 +123,7 @@ function RouteComponent() {
                   {isLoading ? (
                     <Icons.loader className="size-4 animate-spin" />
                   ) : null}
-                  {isLoading ? "Loading..." : "Send Reset Link"}
+                  {isLoading ? "Processing..." : "Send Reset Link"}
                 </Button>
               </form>
             </Form>

@@ -62,7 +62,7 @@ export const NavigationMenu = () => {
                   ) : (
                     <Icons.logOut className="size-4" />
                   )}
-                  {isLoading ? "Loading..." : "Log Out"}
+                  {isLoading ? "Processing..." : "Log Out"}
                 </Button>
               </DropdownMenuContent>
             </DropdownMenu>

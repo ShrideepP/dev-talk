@@ -68,6 +68,7 @@ function RouteComponent() {
               description: "You have been successfully logged in.",
             });
 
+            form.reset();
             navigate({ to: redirect ?? "/" });
           },
           onError: (ctx) => {
@@ -83,7 +84,6 @@ function RouteComponent() {
       );
     } finally {
       setIsLoading(false);
-      form.reset();
     }
   };
 
@@ -155,7 +155,7 @@ function RouteComponent() {
                   {isLoading ? (
                     <Icons.loader className="size-4 animate-spin" />
                   ) : null}
-                  {isLoading ? "Loading..." : "Log In"}
+                  {isLoading ? "Processing..." : "Log In"}
                 </Button>
               </form>
             </Form>

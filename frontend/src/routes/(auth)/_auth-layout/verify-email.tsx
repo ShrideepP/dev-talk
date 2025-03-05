@@ -76,7 +76,7 @@ function RouteComponent() {
             {isLoading ? (
               <Icons.loader className="size-4 animate-spin" />
             ) : null}
-            {isLoading ? "Loading..." : "Resend Email"}
+            {isLoading ? "Processing..." : "Resend Email"}
           </Button>
 
           <Link to="/register">

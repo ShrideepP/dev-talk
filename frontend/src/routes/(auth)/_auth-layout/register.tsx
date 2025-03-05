@@ -69,6 +69,8 @@ function RouteComponent() {
               to: "/verify-email",
               search: { email: ctx.data.user.email },
             });
+
+            form.reset();
           },
           onError: (ctx) => {
             toast({
@@ -83,7 +85,6 @@ function RouteComponent() {
       );
     } finally {
       setIsLoading(false);
-      form.reset();
     }
   };
 
@@ -207,7 +208,7 @@ function RouteComponent() {
                   {isLoading ? (
                     <Icons.loader className="size-4 animate-spin" />
                   ) : null}
-                  {isLoading ? "Loading..." : "Create Account"}
+                  {isLoading ? "Processing..." : "Create Account"}
                 </Button>
               </form>
             </Form>

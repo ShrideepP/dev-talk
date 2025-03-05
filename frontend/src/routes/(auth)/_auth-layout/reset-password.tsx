@@ -68,6 +68,7 @@ function RouteComponent() {
                 "Your password has been updated. You can now log in with your new password.",
             });
 
+            form.reset();
             navigate({ to: "/login" });
           },
           onError: (ctx) => {
@@ -83,7 +84,6 @@ function RouteComponent() {
       );
     } finally {
       setIsLoading(false);
-      form.reset();
     }
   };
 
@@ -150,7 +150,7 @@ function RouteComponent() {
                 {isLoading ? (
                   <Icons.loader className="size-4 animate-spin" />
                 ) : null}
-                {isLoading ? "Loading..." : "Reset Password"}
+                {isLoading ? "Processing..." : "Reset Password"}
               </Button>
             </form>
           </Form>
