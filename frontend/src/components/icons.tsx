@@ -16,6 +16,11 @@ import {
   MessageCircle,
   ChevronLeft,
   Reply,
+  Bold,
+  Italic,
+  Code,
+  FileCode,
+  Highlighter,
 } from "lucide-react";
 
 const GitHub = (lucideProps: LucideProps) => {
@@ -69,4 +74,9 @@ export const Icons = {
   messageCircle: MessageCircle,
   chevronLeft: ChevronLeft,
   reply: Reply,
+  bold: Bold,
+  italic: Italic,
+  code: Code,
+  fileCode: FileCode,
+  highlighter: Highlighter,
 };

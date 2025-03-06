@@ -27,7 +27,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Tiptap } from "@/components/tiptap";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -191,14 +191,13 @@ function RouteComponent() {
                       name="content"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="inline-block">
+                          {/* <FormLabel className="inline-block">
                             Content
-                          </FormLabel>
+                          </FormLabel> */}
                           <FormControl>
-                            <Textarea
-                              {...field}
-                              className="resize-none"
-                              placeholder="Enter your content"
+                            <Tiptap
+                              value={field.value}
+                              onChange={field.onChange}
                             />
                           </FormControl>
                           <FormMessage />

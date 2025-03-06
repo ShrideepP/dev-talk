@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
@@ -120,6 +121,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   --font-geist: "Geist", serif;
+  --font-jetbrains-mono: "JetBrains Mono", monospac;
 }
 
 @layer base {
@@ -138,5 +140,10 @@
 
   :disabled {
     cursor: default;
+  }
+
+  .is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply text-muted-foreground pointer-events-none float-left h-0 text-base md:text-sm;
   }
 }
