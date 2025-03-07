@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
+import { TiptapStaticRenderer } from "./tiptap-static-renderer";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "@tanstack/react-router";
 
@@ -85,10 +86,10 @@ export const Post = ({
         <CardTitle>{post.title}</CardTitle>
 
         {post.contentType === "text" || post.contentType === "link" ? (
-          <CardDescription>
-            {post.contentType === "text" ? (
-              post.content
-            ) : (
+          post.contentType === "text" ? (
+            <TiptapStaticRenderer content={post.content ?? ""} />
+          ) : (
+            <CardDescription>
               <a
                 target="_blank"
                 href={post.url ?? undefined}
@@ -96,8 +97,8 @@ export const Post = ({
               >
                 {post.url}
               </a>
-            )}
-          </CardDescription>
+            </CardDescription>
+          )
         ) : null}
       </CardHeader>
 

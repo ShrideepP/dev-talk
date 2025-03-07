@@ -24,7 +24,7 @@ export const Tiptap = ({
     editorProps: {
       attributes: {
         class:
-          "border-input focus-visible:ring-ring font-geist rounded-md border px-3 py-2 text-base shadow-sm focus-visible:ring-1 focus-visible:outline-none md:text-sm",
+          "border-input focus-visible:ring-ring font-geist rounded-md border px-3 py-2 text-base leading-normal shadow-sm focus-visible:ring-1 focus-visible:outline-none md:text-sm md:leading-normal",
       },
     },
     extensions: [
@@ -43,7 +43,7 @@ export const Tiptap = ({
         languageClassPrefix: "language-",
         HTMLAttributes: {
           class:
-            "bg-accent text-accent-foreground font-jetbrains-mono rounded-lg p-4",
+            "bg-accent text-accent-foreground font-jetbrains-mono rounded-lg px-3 py-2",
         },
       }),
       Highlight.configure({
