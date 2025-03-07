@@ -59,10 +59,19 @@ export const getReplies = async (commentId: string) => {
   return res.data;
 };
 
-export const vote = async <DataType>(body: {
+export const vote = async <T>(body: {
   [key: string]: string;
-}): Promise<AxiosResponse<CreationResponse<DataType>>> => {
+}): Promise<AxiosResponse<CreationResponse<T>>> => {
   const res = await axios.post(`${BASE_API_URL}/api/v1/votes`, body, {
+    withCredentials: true,
+  });
+  return res;
+};
+
+export const reportContent = async (body: {
+  [key: string]: string;
+}): Promise<AxiosResponse<CreationResponse<Report>>> => {
+  const res = await axios.post(`${BASE_API_URL}/api/v1/reports`, body, {
     withCredentials: true,
   });
   return res;

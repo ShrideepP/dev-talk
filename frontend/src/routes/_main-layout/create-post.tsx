@@ -191,9 +191,9 @@ function RouteComponent() {
                       name="content"
                       render={({ field }) => (
                         <FormItem>
-                          {/* <FormLabel className="inline-block">
+                          <FormLabel className="inline-block">
                             Content
-                          </FormLabel> */}
+                          </FormLabel>
                           <FormControl>
                             <Tiptap
                               value={field.value}
@@ -304,7 +304,7 @@ function RouteComponent() {
                   {isPending ? (
                     <Icons.loader className="size-4 animate-spin" />
                   ) : null}
-                  {isPending ? "Processing..." : "Create Post"}
+                  {isPending ? "Just a moment..." : "Create Post"}
                 </Button>
               </form>
             </Form>

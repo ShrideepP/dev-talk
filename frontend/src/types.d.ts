@@ -14,6 +14,12 @@ interface Pagination {
   hasPrevPage: boolean;
 }
 
+type PaginatedResults<T, K extends string> = {
+  pagination: Pagination;
+} & {
+  [P in K]: T[];
+};
+
 interface Category {
   id: string;
   name: string;
@@ -22,10 +28,7 @@ interface Category {
   createdAt: string;
 }
 
-interface Categories {
-  // pagination: Pagination;
-  categories: Category[];
-}
+type Categories = PaginatedResults<Category, "categories">;
 
 interface Post {
   id: string;
@@ -45,10 +48,7 @@ interface Post {
   updatedAt: string;
 }
 
-interface Posts {
-  pagination: Pagination;
-  posts: Post[];
-}
+type Posts = PaginatedResults<Post, "posts">;
 
 interface CreationResponse<DataType> {
   status: "success" | "error";
@@ -72,14 +72,20 @@ interface Comment {
   createdAt: string;
 }
 
-interface Comments {
-  pagination: Pagination;
-  comments: Comment[];
-}
+type Comments = PaginatedResults<Comment, "comments">;
 
 interface Reply extends Comment {}
 
-interface Replies {
-  pagination: Pagination;
-  replies: Reply[];
+type Replies = PaginatedResults<Reply, "replies">;
+
+interface Report {
+  id: string;
+  userId: string;
+  postId?: string;
+  commentId?: string;
+  reason: string;
+  status: "pending" | "reviewed" | "resolved";
+  createdAt: Date;
 }
+
+type Reports = PaginatedResults<Report, "reports">;

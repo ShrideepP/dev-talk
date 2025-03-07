@@ -141,3 +141,17 @@ export const createReplySchema = z.object({
     .max(1000, { message: "Reply must be less than 1000 characters" })
     .trim(),
 });
+
+export const reportPostSchema = z.object({
+  reason: z.enum(
+    [
+      "Spam",
+      "Harassment or Hate Speech",
+      "Misinformation",
+      "Violence or Threats",
+      "Explicit Content",
+      "Illegal Activity",
+    ],
+    { message: "Please select a valid reason" },
+  ),
+});

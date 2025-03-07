@@ -20,7 +20,6 @@ import {
   Italic,
   Code,
   FileCode,
-  Highlighter,
 } from "lucide-react";
 
 const GitHub = (lucideProps: LucideProps) => {
@@ -78,5 +77,4 @@ export const Icons = {
   italic: Italic,
   code: Code,
   fileCode: FileCode,
-  highlighter: Highlighter,
 };

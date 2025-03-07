@@ -123,7 +123,7 @@ function RouteComponent() {
                   {isLoading ? (
                     <Icons.loader className="size-4 animate-spin" />
                   ) : null}
-                  {isLoading ? "Processing..." : "Send Reset Link"}
+                  {isLoading ? "Just a moment..." : "Send Reset Link"}
                 </Button>
               </form>
             </Form>

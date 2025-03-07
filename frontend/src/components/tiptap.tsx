@@ -6,7 +6,6 @@ import Bold from "@tiptap/extension-bold";
 import Italic from "@tiptap/extension-italic";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
-import Highlight from "@tiptap/extension-highlight";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Toggle } from "./ui/toggle";
 import { Icons } from "./icons";
@@ -24,7 +23,7 @@ export const Tiptap = ({
     editorProps: {
       attributes: {
         class:
-          "border-input focus-visible:ring-ring font-geist rounded-md border px-3 py-2 text-base leading-normal shadow-sm focus-visible:ring-1 focus-visible:outline-none md:text-sm md:leading-normal",
+          "font-geist text-base leading-normal outline-none md:text-sm md:leading-normal",
       },
     },
     extensions: [
@@ -46,11 +45,6 @@ export const Tiptap = ({
             "bg-accent text-accent-foreground font-jetbrains-mono rounded-lg px-3 py-2",
         },
       }),
-      Highlight.configure({
-        HTMLAttributes: {
-          class: "bg-primary text-primary-foreground rounded px-1 py-0.5",
-        },
-      }),
       Placeholder.configure({
         placeholder: "Enter your content",
       }),
@@ -60,7 +54,9 @@ export const Tiptap = ({
   if (!editor) return null;
 
   return (
-    <div className="space-y-2">
+    <div
+      className={`border-input space-y-2 rounded-md border px-3 py-2 shadow-sm ${editor.isFocused ? "ring-ring ring-1 outline-none" : ""}`}
+    >
       <div className="flex gap-1">
         <Toggle
           size="sm"
@@ -92,14 +88,6 @@ export const Tiptap = ({
           onPressedChange={() => editor.chain().focus().toggleCodeBlock().run()}
         >
           <Icons.fileCode className="size-4" />
-        </Toggle>
-
-        <Toggle
-          size="sm"
-          pressed={editor.isActive("highlight")}
-          onPressedChange={() => editor.chain().focus().toggleHighlight().run()}
-        >
-          <Icons.highlighter className="size-4" />
         </Toggle>
       </div>
 

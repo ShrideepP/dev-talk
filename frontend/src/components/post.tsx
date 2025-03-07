@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRedirectToLogin } from "@/hooks/use-redirect-to-login";
 import { useVoteOnPost } from "@/hooks/use-vote";
@@ -10,6 +11,7 @@ import {
   CardFooter,
 } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogTrigger } from "./ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -17,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
+import { ReportContent } from "./report-content";
 import { TiptapStaticRenderer } from "./tiptap-static-renderer";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "@tanstack/react-router";
@@ -28,6 +31,8 @@ export const Post = ({
   post: Post;
   hideAddCommentBtn?: boolean;
 }) => {
+  const [open, setOpen] = useState(false);
+
   const { data } = authClient.useSession();
 
   const redirectToLogin = useRedirectToLogin();
@@ -66,20 +71,30 @@ export const Post = ({
           </div>
 
           {data?.user.id === post.userId ? null : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="ghost">
-                  <Icons.ellipsis className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" variant="ghost">
+                    <Icons.ellipsis className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-              <DropdownMenuContent>
-                <Button variant="ghost" className="w-full">
-                  <Icons.flag className="size-4" />
-                  Report Post
-                </Button>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <DropdownMenuContent>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" className="w-full">
+                      <Icons.flag className="size-4" />
+                      Report Post
+                    </Button>
+                  </DialogTrigger>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <ReportContent
+                userId={data?.user.id}
+                postId={post.id}
+                setOpen={setOpen}
+              />
+            </Dialog>
           )}
         </div>
 

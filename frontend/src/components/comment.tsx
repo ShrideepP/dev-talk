@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardHeader, CardTitle, CardFooter } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogTrigger } from "./ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -18,6 +19,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
+import { ReportContent } from "./report-content";
 import {
   Form,
   FormField,
@@ -37,8 +39,8 @@ export const Comment = ({ comment }: { comment: Comment }) => {
 
   const redirectToLogin = useRedirectToLogin();
 
+  const [open, setOpen] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
-
   const [shouldFetchReplies, setShouldFetchReplies] = useState(false);
 
   const {
@@ -125,20 +127,30 @@ export const Comment = ({ comment }: { comment: Comment }) => {
           </div>
 
           {data?.user.id === comment.userId ? null : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="ghost">
-                  <Icons.ellipsis className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" variant="ghost">
+                    <Icons.ellipsis className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-              <DropdownMenuContent>
-                <Button variant="ghost" className="w-full">
-                  <Icons.flag className="size-4" />
-                  Report Comment
-                </Button>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <DropdownMenuContent>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" className="w-full">
+                      <Icons.flag className="size-4" />
+                      Report Comment
+                    </Button>
+                  </DialogTrigger>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <ReportContent
+                userId={data?.user.id}
+                commentId={comment.id}
+                setOpen={setOpen}
+              />
+            </Dialog>
           )}
         </div>
 
@@ -189,7 +201,7 @@ export const Comment = ({ comment }: { comment: Comment }) => {
                 ) : null}
 
                 {isLoading ? (
-                  "Processing..."
+                  "Just a moment..."
                 ) : (
                   <>
                     View Replies
@@ -248,7 +260,9 @@ export const Comment = ({ comment }: { comment: Comment }) => {
                   {replyCommentMutation.isPending ? (
                     <Icons.loader className="size-4 animate-spin" />
                   ) : null}
-                  {replyCommentMutation.isPending ? "Processing..." : "Reply"}
+                  {replyCommentMutation.isPending
+                    ? "Just a moment..."
+                    : "Reply"}
                 </Button>
               </div>
             </form>

@@ -133,7 +133,7 @@ function RouteComponent() {
               {isPending ? (
                 <Icons.loader className="size-4 animate-spin" />
               ) : null}
-              {isPending ? "Processing..." : "Post Comment"}
+              {isPending ? "Just a moment..." : "Post Comment"}
             </Button>
           </form>
         </Form>
