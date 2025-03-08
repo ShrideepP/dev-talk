@@ -6,9 +6,10 @@ import {
   posts as postsTable,
   comments as commentsTable,
   reports as reportsTable,
+  reportsUpdateSchema,
 } from "../../db/schema";
 import { db } from "../../config/database";
-import { eq } from "drizzle-orm";
+import { and, eq, count } from "drizzle-orm";
 
 const router = new Hono<{ Variables: AppVariables }>();
 
@@ -17,64 +18,101 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
     const session = c.get("session");
     const user = c.get("user");
 
-    if (!session || !user)
+    if (!session || !user) {
       return c.json(
         {
           status: "error",
-          message: "User not authenticated",
+          message: "User not authenticated.",
           data: null,
-          errors: [],
         },
         401
       );
+    }
 
-    if (user.banned)
+    if (user.banned) {
       return c.json(
         {
           status: "error",
-          message: "User banned from posting",
+          message: "User banned from reporting content.",
           data: null,
-          errors: [],
         },
         403
       );
+    }
 
     const validatedReport = c.req.valid("json");
     validatedReport.userId = user.id;
 
     const { postId, commentId } = validatedReport;
 
-    const table = postId ? postsTable : commentsTable;
-    const id = postId || commentId;
-
-    if (!id)
+    if ((postId && commentId) || (!postId && !commentId)) {
       return c.json(
         {
           status: "error",
-          message: "Either postId or commentId is required",
+          message: "Exactly one of postId or commentId must be provided.",
           data: null,
-          errors: [],
         },
         400
       );
+    }
 
+    const table = postId ? postsTable : commentsTable;
+    const id = postId || commentId;
     const idColumn = postId ? postsTable.id : commentsTable.id;
+    const userIdColumn = postId ? postsTable.userId : commentsTable.userId;
 
-    const records = await db.select().from(table).where(eq(idColumn, id));
-    if (!records.length) {
+    const contentCheck = await db
+      .select({ id: idColumn, userId: userIdColumn })
+      .from(table)
+      .where(and(...(id ? [eq(idColumn, id)] : [])))
+      .limit(1);
+
+    if (!contentCheck.length) {
       return c.json(
         {
           status: "error",
-          message: "Post or comment does not exist",
+          message: `${postId ? "Post" : "Comment"} does not exist.`,
           data: null,
-          errors: [],
         },
         404
       );
     }
 
-    if (postId) validatedReport.postId = postId;
-    else validatedReport.commentId = commentId;
+    if (contentCheck[0].userId === user.id) {
+      return c.json(
+        {
+          status: "error",
+          message: "You cannot report your own content.",
+          data: null,
+        },
+        403
+      );
+    }
+
+    const conditions = [eq(reportsTable.userId, user.id)];
+
+    if (postId) {
+      conditions.push(eq(reportsTable.postId, postId));
+    } else if (commentId) {
+      conditions.push(eq(reportsTable.commentId, commentId));
+    }
+
+    const existingReport = await db
+      .select({ id: reportsTable.id })
+      .from(reportsTable)
+      .where(and(...conditions))
+      .limit(1);
+
+    if (existingReport.length) {
+      return c.json(
+        {
+          status: "error",
+          message: "You have already reported this content.",
+          data: null,
+        },
+        409
+      );
+    }
 
     const reports = await db
       .insert(reportsTable)
@@ -84,9 +122,8 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
     return c.json(
       {
         status: "success",
-        message: "Report submitted successfully",
+        message: "Report submitted successfully.",
         data: reports[0],
-        errors: [],
       },
       201
     );
@@ -96,7 +133,237 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
         status: "error",
         message: "Something went wrong on our end.",
         data: null,
-        error: [error],
+      },
+      500
+    );
+  }
+});
+
+router.get("/", async (c) => {
+  try {
+    const { page = "1", limit = "10", status = undefined } = c.req.query();
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    const session = c.get("session");
+    const user = c.get("user");
+
+    if (!session || !user) {
+      return c.json(
+        {
+          status: "error",
+          message: "Authentication required.",
+          data: null,
+        },
+        401
+      );
+    }
+
+    if (user.role !== "admin")
+      return c.json(
+        {
+          status: "error",
+          message: "Access denied. Admins only.",
+          data: null,
+        },
+        403
+      );
+
+    const reports = await db
+      .select()
+      .from(reportsTable)
+      .offset(offset)
+      .limit(parseInt(limit))
+      .where(
+        status
+          ? eq(
+              reportsTable.status,
+              status as "pending" | "reviewed" | "resolved"
+            )
+          : undefined
+      );
+
+    const [{ count: totalReports }] = await db
+      .select({ count: count() })
+      .from(reportsTable)
+      .where(
+        status
+          ? eq(
+              reportsTable.status,
+              status as "pending" | "reviewed" | "resolved"
+            )
+          : undefined
+      );
+
+    const totalPages = Math.ceil(totalReports / parseInt(limit));
+
+    return c.json(
+      {
+        status: "success",
+        message: "Reports retrieved successfully.",
+        data: {
+          reports,
+          pagination: {
+            totalItems: totalReports,
+            totalPages,
+            currentPage: parseInt(page),
+            pageSize: parseInt(limit),
+            hasNextPage: parseInt(page) * parseInt(limit) < totalReports,
+            hasPrevPage: parseInt(page) > 1,
+          },
+        },
+        error: [],
+      },
+      200
+    );
+  } catch (error) {
+    return c.json(
+      {
+        status: "error",
+        message: "Something went wrong on our end.",
+        data: null,
+      },
+      500
+    );
+  }
+});
+
+router.patch(
+  "/:reportId",
+  zValidator("json", reportsUpdateSchema),
+  async (c) => {
+    try {
+      const { reportId } = c.req.param();
+
+      const session = c.get("session");
+      const user = c.get("user");
+
+      if (!session || !user) {
+        return c.json(
+          {
+            status: "error",
+            message: "Authentication required.",
+            data: null,
+          },
+          401
+        );
+      }
+
+      if (user.role !== "admin")
+        return c.json(
+          {
+            status: "error",
+            message: "Access denied. Admins only.",
+            data: null,
+          },
+          403
+        );
+
+      const validatedReport = c.req.valid("json");
+
+      const reports = await db
+        .select()
+        .from(reportsTable)
+        .where(eq(reportsTable.id, reportId));
+
+      if (!reports.length)
+        return c.json(
+          {
+            status: "error",
+            message: "Report not found.",
+            data: null,
+          },
+          404
+        );
+
+      const updatedReport = await db
+        .update(reportsTable)
+        .set(validatedReport)
+        .where(eq(reportsTable.id, reportId))
+        .returning();
+
+      return c.json(
+        {
+          status: "success",
+          message: "Report status updated successfully.",
+          data: updatedReport[0],
+        },
+        200
+      );
+    } catch (error) {
+      return c.json(
+        {
+          status: "error",
+          message: "Something went wrong on our end.",
+          data: null,
+        },
+        500
+      );
+    }
+  }
+);
+
+router.delete("/:reportId", async (c) => {
+  try {
+    const { reportId } = c.req.param();
+
+    const session = c.get("session");
+    const user = c.get("user");
+
+    if (!session || !user) {
+      return c.json(
+        {
+          status: "error",
+          message: "Authentication required.",
+          data: null,
+        },
+        401
+      );
+    }
+
+    if (user.role !== "admin")
+      return c.json(
+        {
+          status: "error",
+          message: "Access denied. Admins only.",
+          data: null,
+        },
+        403
+      );
+
+    const reports = await db
+      .select()
+      .from(reportsTable)
+      .where(eq(reportsTable.id, reportId));
+
+    if (!reports.length)
+      return c.json(
+        {
+          status: "error",
+          message: "Report not found.",
+          data: null,
+        },
+        404
+      );
+
+    const deletedReport = await db
+      .delete(reportsTable)
+      .where(eq(reportsTable.id, reportId))
+      .returning();
+
+    return c.json(
+      {
+        status: "success",
+        message: "Report deleted successfully.",
+        data: deletedReport[0],
+      },
+      200
+    );
+  } catch (error) {
+    return c.json(
+      {
+        status: "error",
+        message: "Something went wrong on our end.",
+        data: null,
       },
       500
     );
