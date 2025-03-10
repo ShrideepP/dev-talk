@@ -81,6 +81,7 @@ type Replies = PaginatedResults<Reply, "replies">;
 interface Report {
   id: string;
   userId: string;
+  reportedBy: string;
   postId?: string;
   commentId?: string;
   reason: string;

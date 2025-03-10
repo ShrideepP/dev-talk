@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
@@ -7,6 +8,8 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Fragment } from "react";
@@ -15,6 +18,8 @@ export const NavigationMenu = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { data } = authClient.useSession();
+
+  const navigate = useNavigate();
 
   const logOut = async () => {
     setIsLoading(true);
@@ -56,14 +61,24 @@ export const NavigationMenu = () => {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent>
-                <Button variant="ghost" className="w-full" onClick={logOut}>
-                  {isLoading ? (
-                    <Icons.loader className="size-4 animate-spin" />
-                  ) : (
-                    <Icons.logOut className="size-4" />
-                  )}
-                  {isLoading ? "Just a moment..." : "Log Out"}
-                </Button>
+                <DropdownMenuGroup>
+                  {data.user.role === "admin" ? (
+                    <DropdownMenuItem
+                      onClick={() => navigate({ to: "/admin" })}
+                    >
+                      <Icons.shield className="size-4" /> Manage Content
+                    </DropdownMenuItem>
+                  ) : null}
+
+                  <DropdownMenuItem onClick={logOut}>
+                    {isLoading ? (
+                      <Icons.loader className="size-4 animate-spin" />
+                    ) : (
+                      <Icons.logOut className="size-4" />
+                    )}
+                    {isLoading ? "Loading..." : "Log Out"}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

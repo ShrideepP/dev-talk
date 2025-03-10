@@ -97,7 +97,7 @@ export const ReportContent = ({
             {isPending ? (
               <Icons.loader className="size-4 animate-spin" />
             ) : null}
-            {isPending ? "Just a moment..." : "Submit Report"}
+            {isPending ? "Loading..." : "Submit Report"}
           </Button>
         </form>
       </Form>

@@ -59,7 +59,7 @@ export const Reply = ({ reply }: { reply: Reply }) => {
 
               <DropdownMenuContent>
                 <Button variant="ghost" className="w-full">
-                  <Icons.flag className="size-4" />
+                  <Icons.triangleAlert className="size-4" />
                   Report Reply
                 </Button>
               </DropdownMenuContent>

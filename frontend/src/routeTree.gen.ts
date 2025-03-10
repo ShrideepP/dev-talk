@@ -16,6 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as MainLayoutImport } from './routes/_main-layout'
 import { Route as MainLayoutIndexImport } from './routes/_main-layout/index'
 import { Route as MainLayoutCreatePostImport } from './routes/_main-layout/create-post'
+import { Route as MainLayoutAdminImport } from './routes/_main-layout/admin'
 import { Route as authAuthLayoutImport } from './routes/(auth)/_auth-layout'
 import { Route as MainLayoutPostsPostIdImport } from './routes/_main-layout/posts/$postId'
 import { Route as authAuthLayoutVerifyEmailImport } from './routes/(auth)/_auth-layout/verify-email'
@@ -49,6 +50,12 @@ const MainLayoutIndexRoute = MainLayoutIndexImport.update({
 const MainLayoutCreatePostRoute = MainLayoutCreatePostImport.update({
   id: '/create-post',
   path: '/create-post',
+  getParentRoute: () => MainLayoutRoute,
+} as any)
+
+const MainLayoutAdminRoute = MainLayoutAdminImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => MainLayoutRoute,
 } as any)
 
@@ -120,6 +127,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authAuthLayoutImport
       parentRoute: typeof authRoute
     }
+    '/_main-layout/admin': {
+      id: '/_main-layout/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof MainLayoutAdminImport
+      parentRoute: typeof MainLayoutImport
+    }
     '/_main-layout/create-post': {
       id: '/_main-layout/create-post'
       path: '/create-post'
@@ -182,12 +196,14 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface MainLayoutRouteChildren {
+  MainLayoutAdminRoute: typeof MainLayoutAdminRoute
   MainLayoutCreatePostRoute: typeof MainLayoutCreatePostRoute
   MainLayoutIndexRoute: typeof MainLayoutIndexRoute
   MainLayoutPostsPostIdRoute: typeof MainLayoutPostsPostIdRoute
 }
 
 const MainLayoutRouteChildren: MainLayoutRouteChildren = {
+  MainLayoutAdminRoute: MainLayoutAdminRoute,
   MainLayoutCreatePostRoute: MainLayoutCreatePostRoute,
   MainLayoutIndexRoute: MainLayoutIndexRoute,
   MainLayoutPostsPostIdRoute: MainLayoutPostsPostIdRoute,
@@ -230,6 +246,7 @@ const authRouteWithChildren = authRoute._addFileChildren(authRouteChildren)
 export interface FileRoutesByFullPath {
   '': typeof MainLayoutRouteWithChildren
   '/': typeof MainLayoutIndexRoute
+  '/admin': typeof MainLayoutAdminRoute
   '/create-post': typeof MainLayoutCreatePostRoute
   '/forgot-password': typeof authAuthLayoutForgotPasswordRoute
   '/login': typeof authAuthLayoutLoginRoute
@@ -241,6 +258,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof MainLayoutIndexRoute
+  '/admin': typeof MainLayoutAdminRoute
   '/create-post': typeof MainLayoutCreatePostRoute
   '/forgot-password': typeof authAuthLayoutForgotPasswordRoute
   '/login': typeof authAuthLayoutLoginRoute
@@ -255,6 +273,7 @@ export interface FileRoutesById {
   '/_main-layout': typeof MainLayoutRouteWithChildren
   '/(auth)': typeof authRouteWithChildren
   '/(auth)/_auth-layout': typeof authAuthLayoutRouteWithChildren
+  '/_main-layout/admin': typeof MainLayoutAdminRoute
   '/_main-layout/create-post': typeof MainLayoutCreatePostRoute
   '/_main-layout/': typeof MainLayoutIndexRoute
   '/(auth)/_auth-layout/forgot-password': typeof authAuthLayoutForgotPasswordRoute
@@ -270,6 +289,7 @@ export interface FileRouteTypes {
   fullPaths:
     | ''
     | '/'
+    | '/admin'
     | '/create-post'
     | '/forgot-password'
     | '/login'
@@ -280,6 +300,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/create-post'
     | '/forgot-password'
     | '/login'
@@ -292,6 +313,7 @@ export interface FileRouteTypes {
     | '/_main-layout'
     | '/(auth)'
     | '/(auth)/_auth-layout'
+    | '/_main-layout/admin'
     | '/_main-layout/create-post'
     | '/_main-layout/'
     | '/(auth)/_auth-layout/forgot-password'
@@ -330,6 +352,7 @@ export const routeTree = rootRoute
     "/_main-layout": {
       "filePath": "_main-layout.tsx",
       "children": [
+        "/_main-layout/admin",
         "/_main-layout/create-post",
         "/_main-layout/",
         "/_main-layout/posts/$postId"
@@ -351,6 +374,10 @@ export const routeTree = rootRoute
         "/(auth)/_auth-layout/reset-password",
         "/(auth)/_auth-layout/verify-email"
       ]
+    },
+    "/_main-layout/admin": {
+      "filePath": "_main-layout/admin.tsx",
+      "parent": "/_main-layout"
     },
     "/_main-layout/create-post": {
       "filePath": "_main-layout/create-post.tsx",

@@ -82,7 +82,7 @@ export const Post = ({
                 <DropdownMenuContent>
                   <DialogTrigger asChild>
                     <Button variant="ghost" className="w-full">
-                      <Icons.flag className="size-4" />
+                      <Icons.triangleAlert className="size-4" />
                       Report Post
                     </Button>
                   </DialogTrigger>

@@ -208,7 +208,7 @@ function RouteComponent() {
                   {isLoading ? (
                     <Icons.loader className="size-4 animate-spin" />
                   ) : null}
-                  {isLoading ? "Just a moment..." : "Create Account"}
+                  {isLoading ? "Loading..." : "Create Account"}
                 </Button>
               </form>
             </Form>

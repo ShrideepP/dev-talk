@@ -138,7 +138,7 @@ export const Comment = ({ comment }: { comment: Comment }) => {
                 <DropdownMenuContent>
                   <DialogTrigger asChild>
                     <Button variant="ghost" className="w-full">
-                      <Icons.flag className="size-4" />
+                      <Icons.triangleAlert className="size-4" />
                       Report Comment
                     </Button>
                   </DialogTrigger>
@@ -201,7 +201,7 @@ export const Comment = ({ comment }: { comment: Comment }) => {
                 ) : null}
 
                 {isLoading ? (
-                  "Just a moment..."
+                  "Loading..."
                 ) : (
                   <>
                     View Replies
@@ -260,9 +260,7 @@ export const Comment = ({ comment }: { comment: Comment }) => {
                   {replyCommentMutation.isPending ? (
                     <Icons.loader className="size-4 animate-spin" />
                   ) : null}
-                  {replyCommentMutation.isPending
-                    ? "Just a moment..."
-                    : "Reply"}
+                  {replyCommentMutation.isPending ? "Loading..." : "Reply"}
                 </Button>
               </div>
             </form>

@@ -38,6 +38,15 @@ export const createPost = async (
   return res;
 };
 
+export const deletePost = async (
+  postId: string,
+): Promise<AxiosResponse<CreationResponse<Post>>> => {
+  const res = await axios.delete(`${BASE_API_URL}/api/v1/posts/${postId}`, {
+    withCredentials: true,
+  });
+  return res;
+};
+
 export const createComment = async (body: {
   [key: string]: string;
 }): Promise<AxiosResponse<CreationResponse<Comment>>> => {
@@ -59,6 +68,15 @@ export const getReplies = async (commentId: string) => {
   return res.data;
 };
 
+export const deleteComment = async (
+  commentId: string,
+): Promise<AxiosResponse<CreationResponse<Comment>>> => {
+  const res = await axios.delete(
+    `${BASE_API_URL}/api/v1/comments/${commentId}`,
+  );
+  return res.data;
+};
+
 export const vote = async <T>(body: {
   [key: string]: string;
 }): Promise<AxiosResponse<CreationResponse<T>>> => {
@@ -72,6 +90,46 @@ export const reportContent = async (body: {
   [key: string]: string;
 }): Promise<AxiosResponse<CreationResponse<Report>>> => {
   const res = await axios.post(`${BASE_API_URL}/api/v1/reports`, body, {
+    withCredentials: true,
+  });
+  return res;
+};
+
+export const getReports = async (
+  page: number,
+  status?: "pending" | "reviewed" | "resolved",
+) => {
+  const params = new URLSearchParams();
+  params.append("page", page.toString());
+  params.append("limit", "10");
+  if (status) params.append("status", status);
+
+  const res = await axios.get(
+    `${BASE_API_URL}/api/v1/reports?${params.toString()}`,
+    { withCredentials: true },
+  );
+  return res.data;
+};
+
+export const updateReportStatus = async ({
+  reportId,
+  status,
+}: {
+  reportId: string;
+  status: "pending" | "reviewed" | "resolved";
+}) => {
+  const res = await axios.patch(
+    `${BASE_API_URL}/api/v1/reports/${reportId}`,
+    { status },
+    { withCredentials: true },
+  );
+  return res;
+};
+
+export const deleteReport = async (
+  reportId: string,
+): Promise<AxiosResponse<CreationResponse<Report>>> => {
+  const res = await axios.delete(`${BASE_API_URL}/api/v1/reports/${reportId}`, {
     withCredentials: true,
   });
   return res;
