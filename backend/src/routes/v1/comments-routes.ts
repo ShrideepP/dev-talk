@@ -21,8 +21,6 @@ router.post("/", zValidator("json", commentsInsertSchema), async (c) => {
         {
           status: "error",
           message: "User not authenticated",
-          data: null,
-          errors: [],
         },
         401
       );
@@ -32,8 +30,6 @@ router.post("/", zValidator("json", commentsInsertSchema), async (c) => {
         {
           status: "error",
           message: "User banned from commenting",
-          data: null,
-          errors: [],
         },
         403
       );
@@ -56,8 +52,6 @@ router.post("/", zValidator("json", commentsInsertSchema), async (c) => {
         {
           status: "error",
           message: "Post does not exist",
-          data: null,
-          errors: [],
         },
         404
       );
@@ -73,8 +67,6 @@ router.post("/", zValidator("json", commentsInsertSchema), async (c) => {
           {
             status: "error",
             message: "Parent comment does not exist",
-            data: null,
-            errors: [],
           },
           404
         );
@@ -99,7 +91,6 @@ router.post("/", zValidator("json", commentsInsertSchema), async (c) => {
         status: "success",
         message: "Comment added successfully",
         data: comments[0],
-        errors: [],
       },
       201
     );
@@ -108,8 +99,6 @@ router.post("/", zValidator("json", commentsInsertSchema), async (c) => {
       {
         status: "error",
         message: "Something went wrong on our end.",
-        data: null,
-        error: [error],
       },
       500
     );
@@ -133,8 +122,6 @@ router.get("/:postId", async (c) => {
         {
           status: "error",
           message: "Post not found",
-          data: null,
-          errors: [],
         },
         404
       );
@@ -172,7 +159,6 @@ router.get("/:postId", async (c) => {
             hasPrevPage: parseInt(page) > 1,
           },
         },
-        error: [],
       },
       200
     );
@@ -181,8 +167,6 @@ router.get("/:postId", async (c) => {
       {
         status: "error",
         message: "Something went wrong on our end.",
-        data: null,
-        error: [error],
       },
       500
     );
@@ -206,8 +190,6 @@ router.get("/:commentId/replies", async (c) => {
         {
           status: "error",
           message: "Comment not found",
-          data: null,
-          errors: [],
         },
         404
       );
@@ -241,7 +223,6 @@ router.get("/:commentId/replies", async (c) => {
             hasPrevPage: parseInt(page) > 1,
           },
         },
-        error: [],
       },
       200
     );
@@ -250,8 +231,71 @@ router.get("/:commentId/replies", async (c) => {
       {
         status: "error",
         message: "Something went wrong on our end.",
-        data: null,
-        error: [error],
+      },
+      500
+    );
+  }
+});
+
+router.delete("/:commentId", async (c) => {
+  try {
+    const commentId = c.req.param("commentId");
+
+    const session = c.get("session");
+    const user = c.get("user");
+
+    if (!session || !user) {
+      return c.json(
+        {
+          status: "error",
+          message: "Authentication required.",
+        },
+        401
+      );
+    }
+
+    const comments = await db
+      .select()
+      .from(commentsTable)
+      .where(eq(commentsTable.id, commentId));
+
+    if (!comments.length)
+      return c.json(
+        {
+          status: "error",
+          message: "Comment not found",
+        },
+        404
+      );
+
+    if (user?.id !== comments[0].userId && user.role !== "admin") {
+      return c.json(
+        {
+          status: "error",
+          message: "You are not authorized to perform this action",
+        },
+        403
+      );
+    }
+
+    const deletedComment = await db
+      .delete(commentsTable)
+      .where(eq(commentsTable.id, commentId))
+      .returning();
+
+    return c.json(
+      {
+        status: "success",
+        message: "The comment has been successfully deleted",
+        data: deletedComment,
+      },
+      200
+    );
+  } catch (error) {
+    return c.json(
+      {
+        status: "error",
+        message: "Something went wrong on our end.",
       },
       500
     );

@@ -23,7 +23,6 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
         {
           status: "error",
           message: "User not authenticated.",
-          data: null,
         },
         401
       );
@@ -34,7 +33,6 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
         {
           status: "error",
           message: "User banned from reporting content.",
-          data: null,
         },
         403
       );
@@ -42,6 +40,7 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
 
     const validatedReport = c.req.valid("json");
     validatedReport.userId = user.id;
+    validatedReport.reportedBy = user.name;
 
     const { postId, commentId } = validatedReport;
 
@@ -50,7 +49,6 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
         {
           status: "error",
           message: "Exactly one of postId or commentId must be provided.",
-          data: null,
         },
         400
       );
@@ -72,7 +70,6 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
         {
           status: "error",
           message: `${postId ? "Post" : "Comment"} does not exist.`,
-          data: null,
         },
         404
       );
@@ -83,7 +80,6 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
         {
           status: "error",
           message: "You cannot report your own content.",
-          data: null,
         },
         403
       );
@@ -108,7 +104,6 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
         {
           status: "error",
           message: "You have already reported this content.",
-          data: null,
         },
         409
       );
@@ -132,7 +127,6 @@ router.post("/", zValidator("json", reportsInsertSchema), async (c) => {
       {
         status: "error",
         message: "Something went wrong on our end.",
-        data: null,
       },
       500
     );
@@ -152,7 +146,6 @@ router.get("/", async (c) => {
         {
           status: "error",
           message: "Authentication required.",
-          data: null,
         },
         401
       );
@@ -163,7 +156,6 @@ router.get("/", async (c) => {
         {
           status: "error",
           message: "Access denied. Admins only.",
-          data: null,
         },
         403
       );
@@ -211,7 +203,6 @@ router.get("/", async (c) => {
             hasPrevPage: parseInt(page) > 1,
           },
         },
-        error: [],
       },
       200
     );
@@ -220,7 +211,6 @@ router.get("/", async (c) => {
       {
         status: "error",
         message: "Something went wrong on our end.",
-        data: null,
       },
       500
     );
@@ -242,7 +232,6 @@ router.patch(
           {
             status: "error",
             message: "Authentication required.",
-            data: null,
           },
           401
         );
@@ -253,7 +242,6 @@ router.patch(
           {
             status: "error",
             message: "Access denied. Admins only.",
-            data: null,
           },
           403
         );
@@ -270,7 +258,6 @@ router.patch(
           {
             status: "error",
             message: "Report not found.",
-            data: null,
           },
           404
         );
@@ -294,7 +281,6 @@ router.patch(
         {
           status: "error",
           message: "Something went wrong on our end.",
-          data: null,
         },
         500
       );
@@ -314,7 +300,6 @@ router.delete("/:reportId", async (c) => {
         {
           status: "error",
           message: "Authentication required.",
-          data: null,
         },
         401
       );
@@ -325,7 +310,6 @@ router.delete("/:reportId", async (c) => {
         {
           status: "error",
           message: "Access denied. Admins only.",
-          data: null,
         },
         403
       );
@@ -340,7 +324,6 @@ router.delete("/:reportId", async (c) => {
         {
           status: "error",
           message: "Report not found.",
-          data: null,
         },
         404
       );
@@ -363,7 +346,6 @@ router.delete("/:reportId", async (c) => {
       {
         status: "error",
         message: "Something went wrong on our end.",
-        data: null,
       },
       500
     );

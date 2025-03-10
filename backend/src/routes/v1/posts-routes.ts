@@ -22,8 +22,6 @@ router.post("/", zValidator("form", postsInsertSchema), async (c) => {
         {
           status: "error",
           message: "User not authenticated",
-          data: null,
-          errors: [],
         },
         401
       );
@@ -33,8 +31,6 @@ router.post("/", zValidator("form", postsInsertSchema), async (c) => {
         {
           status: "error",
           message: "User banned from posting",
-          data: null,
-          errors: [],
         },
         403
       );
@@ -57,8 +53,6 @@ router.post("/", zValidator("form", postsInsertSchema), async (c) => {
         {
           status: "error",
           message: "Category does not exist",
-          data: null,
-          errors: [],
         },
         404
       );
@@ -83,7 +77,6 @@ router.post("/", zValidator("form", postsInsertSchema), async (c) => {
         status: "success",
         message: "Post created successfully",
         data: posts[0],
-        errors: [],
       },
       201
     );
@@ -92,8 +85,6 @@ router.post("/", zValidator("form", postsInsertSchema), async (c) => {
       {
         status: "error",
         message: "Something went wrong on our end.",
-        data: null,
-        error: [error],
       },
       500
     );
@@ -123,8 +114,6 @@ router.get("/", async (c) => {
           {
             status: "error",
             message: "Category does not exist",
-            data: null,
-            errors: [],
           },
           404
         );
@@ -162,7 +151,6 @@ router.get("/", async (c) => {
             hasPrevPage: parseInt(page) > 1,
           },
         },
-        error: [],
       },
       200
     );
@@ -171,8 +159,6 @@ router.get("/", async (c) => {
       {
         status: "error",
         message: "Something went wrong on our end.",
-        data: null,
-        error: [error],
       },
       500
     );
@@ -193,8 +179,6 @@ router.get("/:postId", async (c) => {
         {
           status: "error",
           message: "Post does not exist",
-          data: null,
-          errors: [],
         },
         404
       );
@@ -204,7 +188,6 @@ router.get("/:postId", async (c) => {
         status: "success",
         message: "Post retrieved successfully",
         data: posts[0],
-        errors: [],
       },
       200
     );
@@ -213,8 +196,71 @@ router.get("/:postId", async (c) => {
       {
         status: "error",
         message: "Something went wrong on our end.",
-        data: null,
-        error: [error],
+      },
+      500
+    );
+  }
+});
+
+router.delete("/:postId", async (c) => {
+  try {
+    const postId = c.req.param("postId");
+
+    const session = c.get("session");
+    const user = c.get("user");
+
+    if (!session || !user) {
+      return c.json(
+        {
+          status: "error",
+          message: "Authentication required.",
+        },
+        401
+      );
+    }
+
+    const posts = await db
+      .select()
+      .from(postsTable)
+      .where(eq(postsTable.id, postId));
+
+    if (!posts.length)
+      return c.json(
+        {
+          status: "error",
+          message: "Post does not exist",
+        },
+        404
+      );
+
+    if (user?.id !== posts[0].userId && user.role !== "admin") {
+      return c.json(
+        {
+          status: "error",
+          message: "You are not authorized to perform this action",
+        },
+        403
+      );
+    }
+
+    const deletedPost = await db
+      .delete(postsTable)
+      .where(eq(postsTable.id, postId))
+      .returning();
+
+    return c.json(
+      {
+        status: "success",
+        message: "The post has been successfully deleted",
+        data: deletedPost,
+      },
+      200
+    );
+  } catch (error) {
+    return c.json(
+      {
+        status: "error",
+        message: "Something went wrong on our end.",
       },
       500
     );

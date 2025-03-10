@@ -19,6 +19,7 @@ export const reports = pgTable("reports", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  reportedBy: text("reported_by"),
   postId: uuid("post_id").references(() => posts.id, { onDelete: "cascade" }),
   commentId: uuid("comment_id").references(() => comments.id, {
     onDelete: "cascade",
