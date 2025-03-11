@@ -2,8 +2,8 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { Icons } from "./icons";
-import { Button } from "./ui/button";
+import { Icons } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -66,15 +66,15 @@ export const NavigationMenu = () => {
                     <DropdownMenuItem
                       onClick={() => navigate({ to: "/admin" })}
                     >
-                      <Icons.shield className="size-4" /> Manage Content
+                      <Icons.shield /> Manage Content
                     </DropdownMenuItem>
                   ) : null}
 
                   <DropdownMenuItem onClick={logOut}>
                     {isLoading ? (
-                      <Icons.loader className="size-4 animate-spin" />
+                      <Icons.loader className="animate-spin" />
                     ) : (
-                      <Icons.logOut className="size-4" />
+                      <Icons.logOut />
                     )}
                     {isLoading ? "Loading..." : "Log Out"}
                   </DropdownMenuItem>

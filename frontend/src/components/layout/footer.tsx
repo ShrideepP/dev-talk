@@ -1,6 +1,6 @@
-import { useTheme } from "./theme-provider";
-import { Button } from "./ui/button";
-import { Icons } from "./icons";
+import { useTheme } from "@/components/context/theme-provider";
+import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
 
 export const Footer = () => {
   const { setTheme, theme } = useTheme();

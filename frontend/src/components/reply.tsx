@@ -1,6 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 import { useRedirectToLogin } from "@/hooks/use-redirect-to-login";
-import { useVoteOnReply } from "@/hooks/use-vote";
+import { useVoteOnReply } from "@/hooks/mutations/use-vote-mutations";
 import { Card, CardHeader, CardTitle, CardFooter } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {

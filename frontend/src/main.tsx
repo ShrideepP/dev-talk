@@ -3,7 +3,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import ReactDOM from "react-dom/client";
 import { StrictMode } from "react";
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider } from "./components/context/theme-provider";
 import "./index.css";
 
 const client = new QueryClient();

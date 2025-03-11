@@ -5,8 +5,8 @@ import { useRedirectToLogin } from "@/hooks/use-redirect-to-login";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getReplies } from "@/lib/queries";
-import { useVoteOnComment } from "@/hooks/use-vote";
-import { useReplyComment } from "@/hooks/use-comment";
+import { useVoteOnComment } from "@/hooks/mutations/use-vote-mutations";
+import { useReplyComment } from "@/hooks/mutations/use-comment-mutations";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardHeader, CardTitle, CardFooter } from "./ui/card";
@@ -16,6 +16,8 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
@@ -136,12 +138,14 @@ export const Comment = ({ comment }: { comment: Comment }) => {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" className="w-full">
-                      <Icons.triangleAlert className="size-4" />
-                      Report Comment
-                    </Button>
-                  </DialogTrigger>
+                  <DropdownMenuGroup>
+                    <DialogTrigger asChild>
+                      <DropdownMenuItem>
+                        <Icons.triangleAlert />
+                        Report Comment
+                      </DropdownMenuItem>
+                    </DialogTrigger>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
 

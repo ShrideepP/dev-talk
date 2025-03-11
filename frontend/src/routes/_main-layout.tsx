@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { NavigationMenu } from "@/components/navigation-menu";
-import { Footer } from "@/components/footer";
+import { NavigationMenu } from "@/components/layout/navigation-menu";
+import { Footer } from "@/components/layout/footer";
 
 export const Route = createFileRoute("/_main-layout")({
   component: RouteComponent,

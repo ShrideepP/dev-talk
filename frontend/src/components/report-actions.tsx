@@ -1,9 +1,12 @@
 import { z } from "zod";
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useReportActions } from "@/hooks/use-report";
-import { useDeletePost } from "@/hooks/use-create-post";
-import { useDeleteComment } from "@/hooks/use-comment";
+import {
+  useUpdateReportStatus,
+  useDeleteReport,
+} from "@/hooks/mutations/use-report-mutations";
+import { useDeletePost } from "@/hooks/mutations/use-post-mutations";
+import { useDeleteComment } from "@/hooks/mutations/use-comment-mutations";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -38,7 +41,9 @@ export const ReportActions = ({ report }: { report: Report }) => {
 
   const navigate = useNavigate();
 
-  const { updateStatusMutation, deleteContentMutation } = useReportActions();
+  const updateReportStatusMutation = useUpdateReportStatus();
+
+  const deleteReportMutation = useDeleteReport();
 
   const { mutate: deletePost, isPending: isDeletingPost } = useDeletePost();
 
@@ -52,7 +57,7 @@ export const ReportActions = ({ report }: { report: Report }) => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    updateStatusMutation.mutate(
+    updateReportStatusMutation.mutate(
       { reportId: report.id, ...values },
       {
         onSettled: () => {
@@ -87,27 +92,27 @@ export const ReportActions = ({ report }: { report: Report }) => {
                 })
               }
             >
-              <Icons.eye className="size-4" /> View Content
+              <Icons.eye /> View Content
             </DropdownMenuItem>
 
             <DialogTrigger asChild>
               <DropdownMenuItem>
-                <Icons.pencil className="size-4" />
+                <Icons.pencil />
                 Update Status
               </DropdownMenuItem>
             </DialogTrigger>
 
             <DropdownMenuItem
-              onClick={() => deleteContentMutation.mutate(report.id)}
+              onClick={() => deleteReportMutation.mutate(report.id)}
             >
-              {deleteContentMutation.isPending ? (
+              {deleteReportMutation.isPending ? (
                 <Fragment>
-                  <Icons.loader className="size-4 animate-spin" />
+                  <Icons.loader className="animate-spin" />
                   Loading...
                 </Fragment>
               ) : (
                 <Fragment>
-                  <Icons.trash className="size-4" />
+                  <Icons.trash />
                   Dismiss Report
                 </Fragment>
               )}
@@ -116,12 +121,12 @@ export const ReportActions = ({ report }: { report: Report }) => {
             <DropdownMenuItem onClick={removeContent}>
               {isDeletingPost || isDeletingComment ? (
                 <Fragment>
-                  <Icons.loader className="size-4 animate-spin" />
+                  <Icons.loader className="animate-spin" />
                   Loading...
                 </Fragment>
               ) : (
                 <Fragment>
-                  <Icons.triangleAlert className="size-4" /> Remove Content
+                  <Icons.triangleAlert /> Remove Content
                 </Fragment>
               )}
             </DropdownMenuItem>
@@ -171,12 +176,14 @@ export const ReportActions = ({ report }: { report: Report }) => {
             <Button
               type="submit"
               className="w-fit"
-              disabled={updateStatusMutation.isPending}
+              disabled={updateReportStatusMutation.isPending}
             >
-              {updateStatusMutation.isPending ? (
+              {updateReportStatusMutation.isPending ? (
                 <Icons.loader className="size-4 animate-spin" />
               ) : null}
-              {updateStatusMutation.isPending ? "Loading..." : "Update Status"}
+              {updateReportStatusMutation.isPending
+                ? "Loading..."
+                : "Update Status"}
             </Button>
           </form>
         </Form>

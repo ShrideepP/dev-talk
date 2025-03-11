@@ -30,13 +30,13 @@ export const useReport = () => {
   });
 };
 
-export const useReportActions = () => {
+export const useUpdateReportStatus = () => {
   const queryClient = useQueryClient();
 
   const search = useSearch({ from: "/_main-layout/admin" });
   const { page = 1, status } = search;
 
-  const updateStatusMutation = useMutation<
+  return useMutation<
     AxiosResponse<CreationResponse<Report>>,
     AxiosError<CreationResponse<Report>>,
     {
@@ -80,8 +80,15 @@ export const useReportActions = () => {
       });
     },
   });
+};
 
-  const deleteContentMutation = useMutation<
+export const useDeleteReport = () => {
+  const queryClient = useQueryClient();
+
+  const search = useSearch({ from: "/_main-layout/admin" });
+  const { page = 1, status } = search;
+
+  return useMutation<
     AxiosResponse<CreationResponse<Report>>,
     AxiosError<CreationResponse<Report>>,
     string
@@ -120,6 +127,4 @@ export const useReportActions = () => {
       });
     },
   });
-
-  return { updateStatusMutation, deleteContentMutation };
 };

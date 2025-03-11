@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { reportPostSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useReport } from "@/hooks/use-report";
+import { useReport } from "@/hooks/mutations/use-report-mutations";
 import {
   DialogContent,
   DialogHeader,

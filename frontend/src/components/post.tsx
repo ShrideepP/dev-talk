@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRedirectToLogin } from "@/hooks/use-redirect-to-login";
-import { useVoteOnPost } from "@/hooks/use-vote";
+import { useVoteOnPost } from "@/hooks/mutations/use-vote-mutations";
 import {
   Card,
   CardHeader,
@@ -16,6 +16,8 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
@@ -80,12 +82,14 @@ export const Post = ({
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" className="w-full">
-                      <Icons.triangleAlert className="size-4" />
-                      Report Post
-                    </Button>
-                  </DialogTrigger>
+                  <DropdownMenuGroup>
+                    <DialogTrigger asChild>
+                      <DropdownMenuItem>
+                        <Icons.triangleAlert />
+                        Report Post
+                      </DropdownMenuItem>
+                    </DialogTrigger>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
 
