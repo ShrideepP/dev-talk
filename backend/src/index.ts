@@ -20,9 +20,15 @@ app.use(
   "/api/*",
   cors({
     origin: process.env.CLIENT_BASE_URL!,
-    allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["POST", "GET", "OPTIONS", "PATCH", "DELETE"],
-    exposeHeaders: ["Content-Length"],
+    allowHeaders: [
+      "Accept",
+      "Content-Type",
+      "Authorization",
+      "Cookie",
+      "X-Requested-With",
+    ],
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    exposeHeaders: ["Set-Cookie", "Content-Length"],
     maxAge: 600,
     credentials: true,
   })

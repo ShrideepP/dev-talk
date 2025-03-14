@@ -25,8 +25,9 @@ export const auth = betterAuth({
   advanced: {
     cookiePrefix: "dev-talk",
     defaultCookieAttributes: {
-      sameSite: "none",
       secure: true,
+      httpOnly: true,
+      sameSite: "none",
       partitioned: true,
     },
   },
