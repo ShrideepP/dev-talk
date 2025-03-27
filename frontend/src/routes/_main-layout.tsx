@@ -81,7 +81,7 @@ function RouteComponent() {
                               </strong>
                             </div>
 
-                            <span className="text-foreground text-sm font-medium">
+                            <span className="text-foreground text-sm">
                               {score}
                             </span>
                           </div>
