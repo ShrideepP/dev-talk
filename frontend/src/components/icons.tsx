@@ -25,6 +25,7 @@ import {
   Pencil,
   Trash,
   CheckCircle,
+  Info,
 } from "lucide-react";
 
 const GitHub = (lucideProps: LucideProps) => {
@@ -87,4 +88,5 @@ export const Icons = {
   pencil: Pencil,
   trash: Trash,
   checkCircle: CheckCircle,
+  info: Info,
 };
