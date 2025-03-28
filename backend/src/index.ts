@@ -10,6 +10,7 @@ import {
   commentsRoutes,
   votesRoutes,
   reportsRoutes,
+  leaderboardRoutes,
 } from "./routes/v1";
 
 const app = new Hono<{ Variables: AppVariables }>();
@@ -68,6 +69,7 @@ app
   .route("/posts", postsRoutes)
   .route("/comments", commentsRoutes)
   .route("/votes", votesRoutes)
-  .route("/reports", reportsRoutes);
+  .route("/reports", reportsRoutes)
+  .route("/leaderboard", leaderboardRoutes);
 
 export default app;

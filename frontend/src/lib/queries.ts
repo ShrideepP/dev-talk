@@ -134,3 +134,8 @@ export const deleteReport = async (
   });
   return res;
 };
+
+export const getLeaderboard = async () => {
+  const res = await axios.get(`${BASE_API_URL}/api/v1/leaderboard`);
+  return res.data;
+};

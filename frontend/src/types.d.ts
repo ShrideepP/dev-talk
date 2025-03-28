@@ -90,3 +90,28 @@ interface Report {
 }
 
 type Reports = PaginatedResults<Report, "reports">;
+
+interface LeaderboardUser {
+  id: string;
+  name: string;
+  username: string | null;
+  image: string | null;
+  rank: number;
+  postCount: number;
+  commentCount: number;
+  upvotesReceived: number;
+  downvotesReceived: number;
+  score: number;
+}
+
+interface LeaderboardScoringSystem {
+  postPoints: number;
+  commentPoints: number;
+  upvotePoints: number;
+  downvotePoints: number;
+}
+
+type Leaderboard = {
+  leaderboard: LeaderboardUser[];
+  scoringSystem: LeaderboardScoringSystem;
+};
